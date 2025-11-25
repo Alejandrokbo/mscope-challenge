@@ -8,6 +8,8 @@ skinparam rectangle {
 }
 skinparam ArrowColor #333333
 
+title Roadmap 12 meses
+
 rectangle "Mes 1\nSETUP\nTeam / Infra / Tools" as M1 #ADD8E6
 rectangle "Mes 2-3\nQUALITY & CI/CD\nPipelines / Tests 40% / SonarQube" as M2 #90EE90
 rectangle "Mes 3-5\nMIGRACIÓN DB & MULTITENANT\nAurora / Multitenant / Refactor" as M3 #FFFFE0

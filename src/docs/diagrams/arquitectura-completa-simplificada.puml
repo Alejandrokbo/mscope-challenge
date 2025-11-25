@@ -1,0 +1,120 @@
+@startuml arquitectura-completa-simplificada
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+
+title Arquitectura Completa de la Plataforma - Vista Global Simplificada
+
+cloud "Usuarios\nMultipaís" as USERS #2C5AA0
+
+package "Capa de Entrada" {
+    [CloudFront\nCDN Global] as CDN #2C5AA0
+    [API Gateway\nRouting + Auth] as APIGW #2C5AA0
+}
+
+package "Microservicios Core" {
+    [Auth Service\nSSO + OAuth2] as AUTH #5D8BC7
+    [Core Business\nLógica Negocio] as CORE #5D8BC7
+    [Analytics\nReporting] as ANALYTICS #5D8BC7
+    [Notifications\nEmail/SMS] as NOTIF #5D8BC7
+    [Integration\nAPIs Terceros] as INTEG #5D8BC7
+}
+
+package "Capa de Datos" {
+    database "Aurora MySQL\nMultitenant + RLS" as DB #27AE60
+    database "ElastiCache\nRedis" as CACHE #F39C12
+    database "S3 Data Lake\nAnalytics" as S3 #E74C3C
+}
+
+package "Componentes IA" {
+    [Fraude\nXGBoost/SageMaker] as FRAUDE #F39C12
+    [Chatbot\nBedrock Haiku] as CHATBOT #F39C12
+    [Churn\nPersonalize] as CHURN #F39C12
+}
+
+package "Observabilidad" {
+    [CloudWatch\nLogs + Metrics] as CW #95A5A6
+    [X-Ray\nTracing] as XRAY #95A5A6
+}
+
+package "CI/CD" {
+    [GitHub Actions\nPipeline] as CICD #95A5A6
+    [Terraform\nIaC] as IaC #95A5A6
+}
+
+USERS --> CDN
+CDN --> APIGW
+APIGW --> AUTH
+APIGW --> CORE
+APIGW --> ANALYTICS
+APIGW --> NOTIF
+APIGW --> INTEG
+
+AUTH --> DB
+AUTH --> CACHE
+
+CORE --> DB
+CORE --> CACHE
+CORE --> FRAUDE
+
+ANALYTICS --> DB
+ANALYTICS --> S3
+ANALYTICS --> CHATBOT
+
+NOTIF --> CACHE
+
+INTEG --> DB
+
+DB --> CHURN : Data export
+
+AUTH --> CW
+CORE --> CW
+ANALYTICS --> CW
+NOTIF --> CW
+INTEG --> CW
+
+CORE --> XRAY
+ANALYTICS --> XRAY
+
+CICD ..> AUTH : Deploy
+CICD ..> CORE : Deploy
+CICD ..> ANALYTICS : Deploy
+CICD ..> NOTIF : Deploy
+CICD ..> INTEG : Deploy
+
+IaC ..> DB : Provision
+IaC ..> CACHE : Provision
+IaC ..> S3 : Provision
+
+note right of CDN
+  **Global Distribution**
+  - Latencia <100ms
+  - WAF integrado
+  - SSL/TLS
+  - Compresión
+end note
+
+note right of DB
+  **Multitenant**
+  - tenant_id en todas las tablas
+  - Row-Level Security (RLS)
+  - Multi-AZ
+  - Read Replicas regionales
+end note
+
+note right of FRAUDE
+  **IA Tiempo Real**
+  - Detección <100ms
+  - Precisión >90%
+  - Reentrenamiento semanal
+end note
+
+note bottom of CICD
+  **Automatización Total**
+  - 7 stages pipeline
+  - Tests automáticos
+  - Canary deployment
+  - Rollback automático
+end note
+
+@enduml

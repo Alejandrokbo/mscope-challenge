@@ -1,0 +1,88 @@
+@startuml sso-flow
+!theme plain
+
+title Flujo de Autenticación SSO - Extremo a Extremo
+
+participant "Usuario" as USER
+participant "Web/Mobile App" as APP
+participant "IDP\n(Auth Service)" as IDP
+participant "Redis\n(Session)" as REDIS
+participant "Aurora\n(User DB)" as DB
+participant "Proveedor\nExterno" as EXT
+
+== Inicio de Sesión ==
+
+USER -> APP: 1. Click "Login"
+APP -> APP: 2. Generar PKCE\ncode_verifier + challenge
+APP -> IDP: 3. GET /authorize\n+ client_id + redirect_uri\n+ code_challenge + tenant_id
+IDP -> IDP: 4. Validar parámetros
+
+alt Autenticación Federada (opcional)
+    IDP -> EXT: 5a. Redirect a Cl@ve/eIDAS
+    EXT -> EXT: Autenticar usuario
+    EXT -> IDP: 5b. Callback con código
+else Autenticación Local
+    IDP -> USER: 5c. Mostrar formulario login
+    USER -> IDP: 5d. Email + Password
+    IDP -> DB: 5e. Verificar credenciales
+    DB -> IDP: User data + roles
+end
+
+== MFA (Multi-Factor Authentication) ==
+
+IDP -> USER: 6. Solicitar código MFA\n(TOTP/SMS)
+USER -> IDP: 7. Código MFA
+IDP -> IDP: 8. Validar MFA
+
+== Generación de Tokens ==
+
+IDP -> REDIS: 9. Crear sesión activa\n(session_id, user_id, tenant_id)
+IDP -> IDP: 10. Generar:\n- Authorization Code (1 uso)\n- Refresh Token (UUID)
+IDP -> REDIS: 11. Guardar refresh_token\n(TTL: 7 días)
+IDP -> APP: 12. Redirect /callback\n+ authorization_code
+
+== Exchange de Tokens ==
+
+APP -> IDP: 13. POST /token\n+ code + code_verifier\n+ client_id
+IDP -> IDP: 14. Validar PKCE\n(code_challenge == SHA256(verifier))
+IDP -> IDP: 15. Generar JWT:
+note right
+  {
+    "sub": "user_id",
+    "tenant_id": "uuid",
+    "roles": ["USER", "ADMIN"],
+    "exp": now + 30min,
+    "iss": "mscope-idp"
+  }
+end note
+IDP -> APP: 16. Retornar:\n- access_token (JWT)\n- refresh_token\n- expires_in: 1800
+
+APP -> APP: 17. Guardar tokens\n(secure storage)
+APP -> USER: 18. Usuario autenticado
+
+== Uso de API ==
+
+USER -> APP: 19. Acción en app
+APP -> APP: 20. Verificar JWT válido
+alt Token expirado
+    APP -> IDP: 21a. POST /refresh\n+ refresh_token
+    IDP -> REDIS: 21b. Validar refresh_token
+    IDP -> IDP: 21c. Generar nuevo JWT
+    IDP -> IDP: 21d. Rotar refresh_token\n(invalidar antiguo)
+    IDP -> REDIS: 21e. Guardar nuevo refresh_token
+    IDP -> APP: 21f. Nuevo access_token
+end
+
+APP -> APP: 22. Incluir JWT en header:\nAuthorization: Bearer <token>
+APP -> APP: 23. Realizar API call
+
+== Single Logout ==
+
+USER -> APP: 24. Click "Logout"
+APP -> IDP: 25. POST /logout\n+ access_token
+IDP -> REDIS: 26. Invalidar sesión\n+ refresh_token
+IDP -> IDP: 27. Notificar a todas las apps\n(via WebSocket/Server-Sent Events)
+IDP -> APP: 28. Logout confirmado
+APP -> USER: 29. Redirigir a login
+
+@enduml

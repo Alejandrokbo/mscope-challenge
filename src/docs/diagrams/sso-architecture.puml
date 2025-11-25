@@ -1,0 +1,67 @@
+@startuml sso-architecture
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+
+title Arquitectura SSO - Single Sign-On Multipaís
+
+actor "Usuario\nMultipaís" as USER #2C5AA0
+
+package "Identity Provider (IDP)" {
+    [Auth Service] as IDP #5D8BC7
+    database "Session Store\n(Redis)" as REDIS #F39C12
+    database "User DB\n(Aurora)" as USERDB #27AE60
+}
+
+package "Proveedores Externos" {
+    [Cl@ve (España)] as CLAVE #95A5A6
+    [eIDAS (Europa)] as EIDAS #95A5A6
+    [Social Login\n(Google/Apple)] as SOCIAL #95A5A6
+}
+
+package "Aplicaciones Cliente" {
+    [Web App] as WEB #5D8BC7
+    [Mobile App] as MOBILE #5D8BC7
+    [Admin Portal] as ADMIN #5D8BC7
+}
+
+USER --> WEB : 1. Acceder
+WEB --> IDP : 2. Redirect /authorize
+IDP --> CLAVE : 3a. Federated Auth\n(opcional)
+IDP --> EIDAS : 3b. Federated Auth\n(opcional)
+IDP --> SOCIAL : 3c. Social Login\n(opcional)
+IDP --> USERDB : 4. Validar credenciales
+IDP --> REDIS : 5. Crear sesión
+IDP --> WEB : 6. Authorization Code
+WEB --> IDP : 7. Exchange code + PKCE
+IDP --> WEB : 8. JWT + Refresh Token
+WEB --> USER : 9. Acceso concedido
+
+note right of IDP
+  **OAuth 2.0 + OIDC**
+  - Authorization Code Flow
+  - PKCE (mobile security)
+  - JWT con tenant_id
+  - Refresh Token Rotation
+  - MFA obligatorio
+end note
+
+note right of USERDB
+  **Tabla users:**
+  - user_id (UUID)
+  - tenant_id (UUID)
+  - email + password_hash
+  - mfa_secret
+  - roles: JSONB
+  - last_login
+end note
+
+note bottom of REDIS
+  **Sesiones activas:**
+  - session_id → user_id
+  - TTL: 30 minutos
+  - Refresh token: 7 días
+  - Single Logout global
+end note
+
+@enduml
