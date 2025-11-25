@@ -61,8 +61,8 @@ chapter:
 # Portada
 title-page:
   align: center
-  background-color: $brand-primary
-  font-color: ffffff
+  background-color: ffffff
+  font-color: $base-font-color
   logo:
     top: 8%
     align: center
@@ -71,18 +71,22 @@ title-page:
     top: 50%
     font-size: 28
     font-style: bold
+    font-color: $brand-primary
     line-height: 1.2
   subtitle:
     font-size: 16
     font-style: italic
+    font-color: $brand-secondary
     margin-top: $base-line-height-length
   authors:
     margin-top: $base-line-height-length * 3
     font-size: 13
     font-style: normal
+    font-color: $base-font-color
   revision:
     margin-top: $base-line-height-length * 0.5
     font-size: 11
+    font-color: $brand-gray
     delimiter: ' | '
 
 # Tabla de contenidos

@@ -95,7 +95,7 @@ deactivate API
 
 == Intento de Acceso No Autorizado (Bloqueado) ==
 
-User -> API: **GET /api/transactions/mx-transaction-456**\n(Transaction de otro tenant)
+User -> API: **GET /api/transactions/fr-transaction-456**\n(Transaction de otro tenant)
 activate API
 
 API -> Interceptor: tenant_id = "ES-UUID-123"
@@ -103,19 +103,19 @@ activate Interceptor
 Interceptor --> API: Context set
 deactivate Interceptor
 
-API -> Service: Get transaction('mx-transaction-456')
+API -> Service: Get transaction('fr-transaction-456')
 activate Service
 
-Service -> DB: SELECT * FROM transactions\nWHERE transaction_id = 'mx-transaction-456'
+Service -> DB: SELECT * FROM transactions\nWHERE transaction_id = 'fr-transaction-456'
 activate DB
 
 note over DB
   **RLS Policy filtra:**
-  WHERE transaction_id = 'mx-transaction-456'
+  WHERE transaction_id = 'fr-transaction-456'
   **AND tenant_id = 'ES-UUID-123'**
 
   **Resultado:** 0 filas
-  (la transacción existe pero es del tenant MX)
+  (la transacción existe pero es del tenant FR)
 end note
 
 DB --> Service: **Empty result set**
@@ -130,7 +130,7 @@ deactivate API
 note right of User
   **Seguridad garantizada:**
   El tenant ES no puede acceder
-  a datos del tenant MX, incluso
+  a datos del tenant FR, incluso
   si conoce el ID de la transacción
 end note
 

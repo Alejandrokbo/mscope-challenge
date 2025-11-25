@@ -1,10 +1,9 @@
 = Plan de Transformación Tecnológica
 Alejandro Cabo Marchena | https://www.linkedin.com/in/alejandrokbo/[LinkedIn]
 v1.0, 2025-11-25
-:doctype: book
-:toc: left
+:toc:
 :toclevels: 3
-:toc-title: Tabla de Contenidos
+:toc-title: Tabla de Contenido
 :sectanchors:
 :sectlinks:
 :sectnums:
@@ -12,10 +11,9 @@ v1.0, 2025-11-25
 :icons: font
 :source-highlighter: rouge
 :rouge-style: github
-:pdf-theme: themes/mscope-theme.yml
+:pdf-theme: mscope
 :pdf-themesdir: themes
 :imagesdir: images
-:chapter-label!:           // <- desactiva "Chapter"
 :figure-caption: Figura
 :table-caption: Tabla
 :listing-caption: Listado
@@ -231,7 +229,7 @@ Este plan se basa en supuestos razonables para dimensionamiento y cálculos de R
 
 *Países objetivo (ejemplos ilustrativos):*
 
-* España, México, Argentina, Colombia
+* España, Francia, Alemania, Italia
 * Nota: La selección real de países puede ajustarse según estrategia de negocio
 
 *Soporte al cliente (base para cálculo de chatbot):*
@@ -430,7 +428,7 @@ image::microservicios.png[Microservicios Estratégicos,align="center"]
 * Gestión de identidad multipaís
 * SSO con OAuth 2.0 / OpenID Connect
 * MFA obligatorio para operaciones financieras
-* Integración con proveedores locales (ej: Clave Fiscal Argentina)
+* Integración con proveedores locales (ej: Cl@ve España, eIDAS)
 
 *2. Core Business Service*
 
@@ -637,7 +635,7 @@ image::pipeline-cicd.png[Pipeline CI/CD Completo,align="center"]
 
 *4. Build* → Docker multistage + Tag commit SHA + Push ECR + SBOM generation
 
-*5. Deploy Dev* → Auto-deploy (branch develop) + Smoke tests + Notificación Slack
+*5. Deploy Dev* → Auto-deploy (branch develop) + Smoke tests + Notificación Slack o Microsoft Teams
 
 *6. Deploy Staging* → Auto-deploy (branch main) + E2E suite completo + Performance baseline
 
@@ -738,9 +736,9 @@ image::deteccion-fraude-flujo.png[Flujo de Detección de Fraude,align="center"]
 
 *Beneficios:*
 
-*Reducción de fraude 60-80%
-* ⚡ Decisión en < 100ms
-*Mejora continua con datos reales
+* Reducción de fraude 60-80%
+* Decisión en < 100ms
+* Mejora continua con datos reales
 
 === Componente 2: Asistente Virtual con LLM (Atención al Cliente)
 
@@ -1208,7 +1206,7 @@ image::team-structure.png[Estructura del Equipo Técnico,align="center"]
 * CloudFront con distribución global
 * API Gateway con rate limiting
 * Servicio de localización (i18n)
-* Read replicas en regiones target (EU, LATAM)
+* Read replicas en regiones target (EU-West, EU-Central)
 * Feature flags por país/tenant
 * Compliance por jurisdicción (GDPR, local regulations)
 * Caching distribuido (ElastiCache)
