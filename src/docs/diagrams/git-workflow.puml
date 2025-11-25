@@ -1,0 +1,61 @@
+@startuml git-workflow
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+title Git Workflow: GitHub Flow Simplificado
+
+skinparam activity {
+    BackgroundColor #E8F4F8
+    BorderColor #2C5AA0
+    FontSize 11
+}
+
+skinparam note {
+    BackgroundColor #FFFACD
+    BorderColor #E74C3C
+}
+
+rectangle "**main**\n(Rama Protegida)" as main #LightGreen {
+}
+
+rectangle "**Pull Request**\n(Requiere Aprobación + CI Pass)" as pr #LightYellow {
+}
+
+rectangle "**feature/TICKET-123-descripcion**\n(Rama de Desarrollo)" as feature #LightBlue {
+}
+
+feature -up-> pr : "1. Crear PR"
+pr -up-> main : "2. Merge tras\naprobación"
+
+note right of main
+  **Políticas de protección:**
+  • Requiere 1+ aprobaciones
+  • CI debe estar verde
+  • Sin commits directos
+  • Deploy automático a producción
+end note
+
+note right of pr
+  **Proceso de PR:**
+  • PR template con checklist
+  • Code review obligatorio
+  • Tests automáticos
+  • SonarQube quality gates
+  • Security scanning
+end note
+
+note right of feature
+  **Convención de ramas:**
+  • feature/TICKET-XXX-descripcion
+  • fix/TICKET-XXX-descripcion
+  • refactor/TICKET-XXX-descripcion
+
+  **Commits semánticos:**
+  • feat: Nueva funcionalidad
+  • fix: Corrección de bugs
+  • refactor: Refactorización
+  • test: Añadir tests
+  • docs: Documentación
+end note
+
+@enduml

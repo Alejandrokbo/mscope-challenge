@@ -1,0 +1,50 @@
+@startuml microservicios
+!theme plain
+skinparam componentStyle rectangle
+scale 0.85
+
+title Microservicios Estratégicos
+
+[API Gateway] as APIGW #2C5AA0
+
+package "Servicios Core" {
+    [Auth Service] as AUTH #5D8BC7
+    [Core Business] as CORE #5D8BC7
+    [Analytics] as ANALYTICS #5D8BC7
+    [Notification] as NOTIF #5D8BC7
+    [Integration] as INTEGRATION #5D8BC7
+}
+
+package "Data Layer" {
+    database "Aurora\nMultitenant" as DB #27AE60
+    database "ElastiCache" as CACHE #F39C12
+    database "S3 Lake" as S3 #E74C3C
+}
+
+package "AI/ML" {
+    [Fraude\nDetection] as FRAUDE #F39C12
+    [Chatbot\nBedrock] as CHATBOT #F39C12
+}
+
+APIGW --> AUTH
+APIGW --> CORE
+APIGW --> ANALYTICS
+APIGW --> NOTIF
+APIGW --> INTEGRATION
+
+AUTH --> DB
+AUTH --> CACHE
+
+CORE --> DB
+CORE --> CACHE
+CORE --> FRAUDE
+
+ANALYTICS --> DB
+ANALYTICS --> S3
+ANALYTICS --> CHATBOT
+
+NOTIF --> CACHE
+
+INTEGRATION --> DB
+
+@enduml

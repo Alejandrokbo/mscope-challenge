@@ -1,0 +1,57 @@
+@startmindmap
+title Estructura de Configuración de Tenant
+
+* Tenant Configuration
+** Country Settings
+*** country_code
+*** locale
+*** currency
+*** timezone
+*** language
+
+** Compliance & Regulatory
+*** gdpr_enabled
+*** data_residency
+*** kyc_level
+*** aml_enabled
+*** reporting_standards
+*** data_retention_days
+
+** Feature Flags
+*** ai_fraud_detection
+*** chatbot_enabled
+*** mobile_app
+*** wire_transfers
+*** international_transfers
+*** investment_products
+*** crypto_trading
+*** biometric_auth
+
+** Operational Limits
+*** max_transaction_amount
+*** daily_limit
+*** monthly_limit
+*** min_balance
+*** overdraft_allowed
+*** max_overdraft
+*** withdrawal_daily_limit
+*** transfer_daily_limit
+
+** Integration Settings
+*** payment_gateway
+*** sms_provider
+*** email_provider
+*** kyc_provider
+*** fraud_detection_provider
+*** notification_webhook
+
+** Branding & UI
+*** logo_url
+*** primary_color
+*** secondary_color
+*** support_email
+*** support_phone
+*** terms_url
+*** privacy_url
+
+@endmindmap

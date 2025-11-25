@@ -1,0 +1,98 @@
+@startuml modelo-multitenant
+!theme plain
+
+title Modelo de Datos Multitenant con Row-Level Security
+
+entity "tenants" as TENANT {
+  * tenant_id : UUID <<PK>>
+  --
+  * country_code : VARCHAR(2)
+  * name : VARCHAR(255)
+  * config : JSONB
+  * status : ENUM
+  * created_at : TIMESTAMP
+}
+
+entity "users" as USER {
+  * user_id : UUID <<PK>>
+  * tenant_id : UUID <<FK>>
+  --
+  * email : VARCHAR(255)
+  * password_hash : VARCHAR(255)
+  * role : ENUM
+  * created_at : TIMESTAMP
+}
+
+entity "transactions" as TRANSACTION {
+  * id : UUID <<PK>>
+  * tenant_id : UUID <<FK>>
+  * user_id : UUID <<FK>>
+  --
+  * amount : DECIMAL(15,2)
+  * currency : VARCHAR(3)
+  * type : ENUM
+  * status : ENUM
+  * fraud_score : DECIMAL(3,2)
+  * created_at : TIMESTAMP
+}
+
+entity "products" as PRODUCT {
+  * product_id : UUID <<PK>>
+  * tenant_id : UUID <<FK>>
+  --
+  * name : VARCHAR(255)
+  * type : ENUM
+  * config : JSONB
+  * active : BOOLEAN
+}
+
+entity "accounts" as ACCOUNT {
+  * account_id : UUID <<PK>>
+  * tenant_id : UUID <<FK>>
+  * user_id : UUID <<FK>>
+  * product_id : UUID <<FK>>
+  --
+  * balance : DECIMAL(15,2)
+  * currency : VARCHAR(3)
+  * status : ENUM
+  * created_at : TIMESTAMP
+}
+
+TENANT ||--o{ USER : contains
+TENANT ||--o{ TRANSACTION : contains
+TENANT ||--o{ PRODUCT : contains
+TENANT ||--o{ ACCOUNT : contains
+
+USER ||--o{ TRANSACTION : makes
+USER ||--o{ ACCOUNT : owns
+
+PRODUCT ||--o{ ACCOUNT : "based on"
+
+note right of TENANT
+  **Config JSONB:**
+  {
+    "locale": "es-ES",
+    "currency": "EUR",
+    "compliance_rules": {...},
+    "feature_flags": {...}
+  }
+end note
+
+note bottom of TRANSACTION
+  **Row-Level Security:**
+  CREATE POLICY tenant_isolation
+  ON transactions
+  USING (tenant_id =
+    current_setting('app.current_tenant')::UUID);
+end note
+
+note left of USER
+  **Aislamiento por Tenant**
+  Todas las queries incluyen:
+  WHERE tenant_id = :current_tenant
+
+  Aplicado automáticamente
+  via RLS (Row Level Security)
+end note
+
+@enduml

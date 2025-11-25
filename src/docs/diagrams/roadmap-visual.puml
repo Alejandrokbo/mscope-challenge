@@ -1,0 +1,28 @@
+@startuml
+left to right direction
+
+skinparam backgroundColor #FFFFFF
+skinparam rectangle {
+  BorderColor #333333
+  RoundCorner 10
+}
+skinparam ArrowColor #333333
+
+rectangle "Mes 1\nSETUP\nTeam / Infra / Tools" as M1 #ADD8E6
+rectangle "Mes 2-3\nQUALITY & CI/CD\nPipelines / Tests 40% / SonarQube" as M2 #90EE90
+rectangle "Mes 3-5\nMIGRACIÓN DB & MULTITENANT\nAurora / Multitenant / Refactor" as M3 #FFFFE0
+rectangle "Mes 5-7\nMULTIPAÍS & ESCALA\nCloudFront / Réplicas / Caching" as M4 #FFB6C1
+rectangle "Mes 6-7\nIA FRAUDE\nSageMaker / ML Model / Kinesis" as M5 #FFA07A
+rectangle "Mes 8-9\nIA ASIST. & TESTS\nBedrock / Chatbot / Coverage 70%" as M6 #87CEFA
+rectangle "Mes 10-11\nOPTIM. & SECURITY\nCost optim / Pentest / DR Plan" as M7 #D3D3D3
+rectangle "Mes 12\nLAUNCH B2C\nSoft / Full / Stable" as M8 #90EE90
+
+M1 --> M2
+M2 --> M3
+M3 --> M4
+M4 --> M5
+M5 --> M6
+M6 --> M7
+M7 --> M8
+
+@enduml

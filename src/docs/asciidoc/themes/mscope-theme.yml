@@ -1,0 +1,197 @@
+---
+# Tema profesional para mscope Tech Lead Plan
+extends: default
+
+# Configuración de página
+page:
+  background-color: ffffff
+  layout: portrait
+  margin: [0.75in, 1in, 0.75in, 1in]
+  size: A4
+
+# Tipografía base (usando fuentes predeterminadas)
+base:
+  font-color: 333333
+  font-size: 10.5
+  line-height-length: 14
+  line-height: $base-line-height-length / $base-font-size
+
+# Colores mscope (puedes personalizar)
+brand:
+  primary: 2C5AA0    # Azul corporativo
+  secondary: 5D8BC7  # Azul claro
+  accent: E74C3C     # Rojo/naranja para destacar
+  success: 27AE60    # Verde
+  warning: F39C12    # Naranja
+  gray: 95A5A6       # Gris
+
+# Enlaces
+link:
+  font-color: $brand-primary
+
+# Headings
+heading:
+  font-color: $brand-primary
+  font-family: $base-font-family
+  font-style: bold
+  chapter-label: ''
+  h1:
+    font-size: 24
+    font-color: $brand-primary
+    margin-top: $base-line-height-length * 2
+    margin-bottom: $base-line-height-length
+  h2:
+    font-size: 18
+    font-color: $brand-primary
+    margin-top: $base-line-height-length * 1.5
+    margin-bottom: $base-line-height-length * 0.5
+  h3:
+    font-size: 14
+    font-color: $brand-secondary
+    margin-top: $base-line-height-length
+    margin-bottom: $base-line-height-length * 0.25
+  h4:
+    font-size: 12
+    font-color: $brand-secondary
+
+# Configuración de capítulos (para doctype: book)
+chapter:
+  label: ''
+
+# Portada
+title-page:
+  align: center
+  background-color: $brand-primary
+  font-color: ffffff
+  logo:
+    top: 8%
+    align: center
+    image: image:mscope-logo.png[width=200]
+  title:
+    top: 50%
+    font-size: 28
+    font-style: bold
+    line-height: 1.2
+  subtitle:
+    font-size: 16
+    font-style: italic
+    margin-top: $base-line-height-length
+  authors:
+    margin-top: $base-line-height-length * 3
+    font-size: 13
+    font-style: normal
+  revision:
+    margin-top: $base-line-height-length * 0.5
+    font-size: 11
+    delimiter: ' | '
+
+# Tabla de contenidos
+toc:
+  indent: 20
+  font-size: 10
+  font-color: $base-font-color
+  line-height: 1.4
+  dot-leader-color: DDDDDD
+
+# Bloques de código
+code:
+  font-size: 9
+  padding: [8, 12, 8, 12]
+  line-height: 1.4
+  background-color: F8F9FA
+  border-color: E1E4E8
+  border-radius: 3
+  border-width: 0.5
+
+# Bloques literales (código con más contexto)
+literal:
+  font-size: 9
+  background-color: F8F9FA
+  border-color: E1E4E8
+  border-radius: 3
+  border-width: 0.5
+  padding: [8, 12, 8, 12]
+
+# Tablas
+table:
+  background-color: ffffff
+  border-color: DDDDDD
+  border-width: 0.5
+  cell-padding: [4, 6, 4, 6]
+  head:
+    font-style: bold
+    background-color: $brand-primary
+    font-color: ffffff
+  body:
+    stripe-background-color: F8F9FA
+  foot:
+    background-color: F0F0F0
+
+# Listas
+list:
+  indent: 20
+  item-spacing: 4
+
+# Admonitions (notas, warnings, tips)
+admonition:
+  column-rule-color: DDDDDD
+  column-rule-width: 0.5
+  padding: [8, 12, 8, 12]
+  label:
+    font-style: bold
+  note:
+    label:
+      font-color: $brand-primary
+  tip:
+    label:
+      font-color: $brand-success
+  warning:
+    label:
+      font-color: $brand-warning
+  important:
+    label:
+      font-color: $brand-accent
+
+# Quotes
+blockquote:
+  font-color: 555555
+  font-size: $base-font-size
+  border-color: DDDDDD
+  border-width: 4
+  padding: [8, 16, 8, 16]
+  cite:
+    font-size: $base-font-size * 0.9
+    font-color: 999999
+
+# Header y Footer
+header:
+  height: 0.6in
+  line-height: 1
+  recto:
+    right:
+      content: '{document-title}'
+  verso:
+    left:
+      content: '{document-title}'
+  border-color: DDDDDD
+  border-width: 0.5
+
+footer:
+  height: 0.6in
+  line-height: 1
+  recto:
+    right:
+      content: 'Página {page-number} de {page-count}'
+    left:
+      content: 'Plan Tech Lead - mscope'
+  verso:
+    left:
+      content: 'Página {page-number} de {page-count}'
+    right:
+      content: 'Plan Tech Lead - mscope'
+  border-color: DDDDDD
+  border-width: 0.5
+
+# Imágenes
+image:
+  align: center

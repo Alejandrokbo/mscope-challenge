@@ -1,0 +1,109 @@
+@startuml arquitectura-ia
+!theme plain
+skinparam componentStyle rectangle
+
+title Arquitectura de Componentes de IA
+
+actor Usuario as USER
+
+package "Detección de Fraude en Tiempo Real" {
+    [Transaction API] as TX_API #2C5AA0
+    queue "Kinesis Stream" as KINESIS #F39C12
+    component "Feature Engineering\nLambda" as FEATURE_ENG #5D8BC7 {
+        [Extractar Features]
+        [Device Fingerprint]
+        [Patrón Histórico]
+    }
+    component "SageMaker\nEndpoint" as SAGEMAKER #27AE60 {
+        [XGBoost Model]
+        [Isolation Forest]
+    }
+    database "Model Store\nS3" as MODEL_S3 #E74C3C
+}
+
+package "Asistente Virtual Bedrock" {
+    [Chat API] as CHAT_API #2C5AA0
+    component "Intent Classifier\nLambda" as INTENT #5D8BC7 {
+        [Simple FAQ?]
+        [Complex Query?]
+    }
+    database "Cache\nRedis" as REDIS_CACHE #F39C12 {
+        note right: 60% hit rate
+    }
+    component "Bedrock\nClaude 3.5 Haiku" as BEDROCK #27AE60 {
+        [LLM Inference]
+    }
+    database "Knowledge Base\npgvector" as PGVECTOR #E74C3C {
+        [Embeddings]
+        [FAQs]
+        [Docs]
+    }
+    [Response] as RESPONSE
+}
+
+package "Predicción de Churn" {
+    queue "User Events\nKinesis" as EVENTS_KINESIS #F39C12
+    component "Daily Batch\nLambda" as BATCH #5D8BC7 {
+        [Extract User Behavior]
+        [Calculate Features]
+    }
+    component "SageMaker\nBatch Transform" as BATCH_ML #27AE60 {
+        [LightGBM Model]
+    }
+    database "Churn Scores\nS3" as CHURN_S3 #E74C3C
+    [Marketing Campaign\nTrigger] as CAMPAIGN
+}
+
+' Flujo Detección Fraude
+USER --> TX_API : Nueva transacción
+TX_API --> KINESIS : Publicar evento
+KINESIS --> FEATURE_ENG
+FEATURE_ENG --> SAGEMAKER : Features vector
+SAGEMAKER <--> MODEL_S3 : Load model
+SAGEMAKER --> TX_API : Fraud score
+TX_API --> USER : Aprobada/Rechazada
+
+' Flujo Chatbot
+USER --> CHAT_API : Consulta
+CHAT_API --> INTENT : Clasificar
+INTENT --> REDIS_CACHE : Check cache
+REDIS_CACHE --> INTENT : Cache hit?
+
+INTENT --> BEDROCK : Complex query
+BEDROCK --> PGVECTOR : RAG lookup
+PGVECTOR --> BEDROCK : Context
+BEDROCK --> RESPONSE : Generated answer
+RESPONSE --> REDIS_CACHE : Update cache
+RESPONSE --> USER : Respuesta
+
+' Flujo Churn
+USER --> EVENTS_KINESIS : Eventos de uso
+EVENTS_KINESIS --> BATCH : Daily trigger
+BATCH --> BATCH_ML : User features
+BATCH_ML --> CHURN_S3 : Churn scores
+CHURN_S3 --> CAMPAIGN : High risk users
+
+note right of SAGEMAKER
+  **Modelo:**
+  - XGBoost
+  - Precision: 92%
+  - Latency: <100ms
+  - Cost: $200/mes
+end note
+
+note right of BEDROCK
+  **Optimización:**
+  - Modelo: Haiku
+  - Caching: 60%
+  - Cost: $1/mes
+  - ROI: 13,000%
+end note
+
+note right of BATCH_ML
+  **Schedule:**
+  - Ejecuta diariamente
+  - Batch inference
+  - Cost: $50/mes
+end note
+
+@enduml

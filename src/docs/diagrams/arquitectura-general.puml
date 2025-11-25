@@ -1,0 +1,67 @@
+@startuml arquitectura-general
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+
+title Arquitectura Multipaís y Multitenant - Vista General
+
+package "Capa de Distribución Global" {
+    [CloudFront + WAF] as CF #2C5AA0
+    [API Gateway] as APIGW #2C5AA0
+}
+
+package "Región Europa" {
+    [ECS Fargate EU] as ECS_EU #5D8BC7
+    [Aurora Primary EU] as DB_EU #27AE60
+    [ElastiCache EU] as CACHE_EU #F39C12
+}
+
+package "Región LATAM" {
+    [ECS Fargate LATAM] as ECS_LATAM #5D8BC7
+    [Aurora Replica LATAM] as DB_LATAM #27AE60
+    [ElastiCache LATAM] as CACHE_LATAM #F39C12
+}
+
+package "Región Backup" {
+    [ECS Fargate Backup] as ECS_BACKUP #95A5A6
+    [Aurora Replica Backup] as DB_BACKUP #95A5A6
+}
+
+cloud "Usuarios\nMultipaís" as USERS
+
+USERS --> CF
+CF --> APIGW
+APIGW --> ECS_EU
+APIGW --> ECS_LATAM
+APIGW --> ECS_BACKUP
+
+ECS_EU --> DB_EU
+ECS_EU --> CACHE_EU
+
+ECS_LATAM --> DB_LATAM
+ECS_LATAM --> CACHE_LATAM
+
+ECS_BACKUP --> DB_BACKUP
+
+DB_EU ..> DB_LATAM : Replicación
+DB_EU ..> DB_BACKUP : Replicación
+
+note right of CF
+  - Rate Limiting
+  - DDoS Protection
+  - SSL/TLS
+end note
+
+note right of APIGW
+  - Autenticación
+  - Rate Limiting
+  - Routing por país
+end note
+
+note right of DB_EU
+  - Row-Level Security
+  - Multitenant
+  - Auto-backup
+end note
+
+@enduml

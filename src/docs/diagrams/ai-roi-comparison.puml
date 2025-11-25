@@ -1,0 +1,110 @@
+@startuml ai-roi-comparison
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+title Comparativa de ROI - Componentes de IA (Año 1)
+
+skinparam rectangle {
+    BackgroundColor #E8F4F8
+    BorderColor #2C5AA0
+    FontSize 11
+}
+
+skinparam note {
+    BackgroundColor #FFFACD
+    BorderColor #E74C3C
+}
+
+' Componente 1: Bedrock Chatbot
+rectangle "**Bedrock (Chatbot)**\n━━━━━━━━━━━━━━━━━━━━━━━━━" as bedrock #90EE90 {
+  rectangle "Inversión: 300€/año" as inv1
+  rectangle "Ahorro: 40.000€/año" as save1 #LightGreen
+  rectangle "**ROI: 13.000%**" as roi1 #00FF00
+
+  inv1 -[hidden]down- save1
+  save1 -[hidden]down- roi1
+}
+
+' Barra visual de ROI
+rectangle "█████████████████████████████████████" as bar1 #00FF00
+
+' Componente 2: Detección de Fraude
+rectangle "**Detección de Fraude**\n━━━━━━━━━━━━━━━━━━━━━━━━━" as fraude #FFE4B5 {
+  rectangle "Inversión: 2.400€/año" as inv2
+  rectangle "Ahorro: 50.000€/año" as save2 #LightYellow
+  rectangle "**ROI: 2.000%**" as roi2 #FFD700
+
+  inv2 -[hidden]down- save2
+  save2 -[hidden]down- roi2
+}
+
+' Barra visual de ROI
+rectangle "████████████████" as bar2 #FFD700
+
+' Componente 3: Churn Prediction
+rectangle "**Churn Prediction**\n━━━━━━━━━━━━━━━━━━━━━━━━━" as churn #FFC0CB {
+  rectangle "Inversión: 4.800€/año" as inv3
+  rectangle "Valor: 15.000€/año" as save3 #LightPink
+  rectangle "**ROI: 300%**" as roi3 #FF69B4
+
+  inv3 -[hidden]down- save3
+  save3 -[hidden]down- roi3
+}
+
+' Barra visual de ROI
+rectangle "███" as bar3 #FF69B4
+
+' Layout vertical
+bedrock -[hidden]down- bar1
+bar1 -[hidden]down- fraude
+fraude -[hidden]down- bar2
+bar2 -[hidden]down- churn
+churn -[hidden]down- bar3
+
+note right of bedrock
+  **Caso excepcional:**
+  • ROI más alto del mercado
+  • Break-even: 3 días
+  • Escalable a 100K clientes
+  • Costo marginal mínimo
+
+  **Componentes:**
+  • Claude 3.5 Haiku
+  • pgvector (no OpenSearch)
+  • Cache Redis (60% hits)
+end note
+
+note right of fraude
+  **Protección crítica:**
+  • Prevención de pérdidas
+  • Decisión <100ms
+  • ML en tiempo real
+  • Mejora continua
+
+  **Impacto:**
+  • Reducción fraude 60-80%
+  • Precisión >90%
+  • False positives <5%
+end note
+
+note right of churn
+  **Retención de clientes:**
+  • Predicción 30 días
+  • Campañas automatizadas
+  • Recomendaciones personalizadas
+
+  **Opcional para Fase 3:**
+  Evaluar según presupuesto
+  disponible (mes 10-12)
+end note
+
+legend bottom
+  **Inversión Total Año 1:** 2.700€ (solo Bedrock + Fraude)
+  **Ahorro/Valor Total:** 90.000€/año
+  **ROI Promedio Ponderado:** ~3.230%
+
+  **Recomendación:** Implementar Bedrock + Fraude en Año 1
+  **Opcional:** Churn Prediction en Año 2 según resultados
+endlegend
+
+@enduml

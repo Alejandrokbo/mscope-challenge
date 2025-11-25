@@ -1,0 +1,40 @@
+@startuml asistente-virtual-flujo
+!theme plain
+skinparam backgroundColor #FFFFFF
+scale 0.8
+
+title Asistente Virtual con LLM - Flujo de Atención
+
+start
+:Cliente consulta
+(Web/App/WhatsApp);
+
+:API Gateway +
+Auth;
+
+:Intent Classification
+(Amazon Comprehend);
+
+if (Intent simple?) then (yes)
+  :Respuesta desde
+  **Cache/FAQ**
+  (60% consultas);
+else (no)
+  :Bedrock Claude 3.5 Haiku
+  + **RAG** (pgvector);
+
+  if (Confianza < 0.7?) then (yes)
+    :Escalar a humano;
+  endif
+endif
+
+:Respuesta al cliente;
+
+if (Solicita humano?) then (yes)
+  :Ticket soporte;
+  stop
+else (no)
+  stop
+endif
+
+@enduml

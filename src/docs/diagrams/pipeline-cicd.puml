@@ -1,0 +1,115 @@
+@startuml pipeline-cicd
+!theme plain
+
+title Pipeline CI/CD Completo
+
+|Git|
+start
+:Commit & Push;
+:Trigger Webhook;
+
+|CI Pipeline|
+:Validate;
+note right
+  - Linting (ESLint, Checkstyle)
+  - Format Check
+  - Dependency Audit
+end note
+
+:Run Tests;
+fork
+    :Unit Tests;
+fork again
+    :Integration Tests;
+fork again
+    :Contract Tests;
+end fork
+
+:Code Coverage Report;
+if (Coverage >= 70%?) then (yes)
+    #LightGreen:Quality Gate: PASS;
+else (no)
+    #Pink:Quality Gate: FAIL;
+    stop
+endif
+
+|Security|
+:Security Scan;
+fork
+    :SAST (SonarQube);
+fork again
+    :Secret Scanning;
+fork again
+    :Container Scan (Trivy);
+end fork
+
+if (Vulnerabilities?) then (critical)
+    #Pink:Block Deployment;
+    stop
+else (none/low)
+    #LightGreen:Continue;
+endif
+
+|Build|
+:Build Docker Image;
+:Tag with SHA;
+:Push to ECR;
+:Generate SBOM;
+
+|Deploy DEV|
+:Auto-deploy to DEV;
+:Smoke Tests;
+if (Success?) then (yes)
+    #LightGreen:Notify Slack;
+else (no)
+    #Pink:Rollback;
+    stop
+endif
+
+|Deploy STAGING|
+if (Branch = main?) then (yes)
+    :Auto-deploy to STAGING;
+    :Full E2E Tests;
+    :Performance Baseline;
+else (no)
+    stop
+endif
+
+|Deploy PRODUCTION|
+if (Manual Approval?) then (approved)
+    :Blue-Green Deployment;
+    note right
+      1. Deploy to Green
+      2. Smoke Tests
+      3. Canary 10%
+      4. Monitor 15 min
+      5. Canary 50%
+      6. Monitor 30 min
+      7. Full 100%
+    end note
+
+    if (Error Rate > 1%?) then (yes)
+        #Pink:Auto-Rollback;
+        :Alert Team;
+        stop
+    else (no)
+        #LightGreen:Switch Traffic;
+        :Post-deployment Verification;
+        :Notify Success;
+    endif
+else (rejected)
+    stop
+endif
+
+|Monitoring|
+:Continuous Monitoring;
+note right
+  - CloudWatch Metrics
+  - Error Tracking
+  - Performance Monitoring
+  - User Analytics
+end note
+
+stop
+
+@enduml

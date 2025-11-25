@@ -1,0 +1,66 @@
+@startuml deteccion-fraude-flujo
+!theme plain
+skinparam backgroundColor #FFFFFF
+
+title Sistema de Detección de Fraude - Flujo en Tiempo Real
+
+|Transacciones|
+start
+:Transacción en tiempo real;
+note right
+  Usuario realiza una
+  transacción financiera
+end note
+
+|Kinesis|
+:Publicar evento a
+**Kinesis Data Streams**;
+note right
+  Streaming de eventos
+  en tiempo real
+end note
+
+|Feature Engineering|
+:Lambda: Feature Engineering;
+note right
+  **Extracción de features:**
+  - Monto, frecuencia, geolocalización
+  - Patrones históricos del usuario
+  - Device fingerprinting
+  - Hora del día / día de semana
+end note
+
+|Machine Learning|
+:SageMaker Endpoint
+(Modelo ML);
+note right
+  **Modelos:**
+  - Isolation Forest (anomalías)
+  - XGBoost (clasificación fraude)
+  - Umbral de confianza: 0.85
+  - Latencia: <100ms
+end note
+
+:Generar Fraud Score
+(0.0 - 1.0);
+
+|Decisión|
+if (Score < 0.3?) then (yes)
+  #LightGreen:**[OK] Aprobar**;
+  :Procesar transacción;
+  :Notificar usuario;
+  stop
+else if (Score > 0.7?) then (yes)
+  #Pink:**[!] Revisar manualmente**;
+  :Bloquear transacción;
+  :Alertar equipo de fraude;
+  :Notificar usuario;
+  stop
+else (0.3 - 0.7)
+  #LightYellow:**Zona gris**;
+  :Aplicar validación adicional
+  (MFA, verificación);
+  stop
+endif
+
+@enduml

@@ -1,0 +1,200 @@
+@startuml database-indexes-optimization
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+title Estrategia de Índices y Optimización de Base de Datos
+
+skinparam class {
+    BackgroundColor #E8F4F8
+    BorderColor #2C5AA0
+    FontSize 10
+}
+
+skinparam note {
+    BackgroundColor #FFFACD
+    BorderColor #E74C3C
+}
+
+package "Índices Principales" {
+
+  class "**transactions**" as trans {
+    .. Primary Key ..
+    ✓ PRIMARY KEY (transaction_id)
+
+    .. Compound Indexes ..
+    ✓ idx_tenant_created (tenant_id, created_at DESC)
+    ✓ idx_tenant_status (tenant_id, status, created_at DESC)
+    ✓ idx_account_date (account_id, created_at DESC)
+
+    .. Partial Indexes ..
+    ✓ idx_fraud_high_risk (tenant_id, fraud_score)
+      WHERE fraud_score > 0.6
+    ✓ idx_pending_transactions (tenant_id, created_at)
+      WHERE status = 'pending'
+
+    .. Covering Indexes ..
+    ✓ idx_transaction_summary (tenant_id, status)
+      INCLUDE (amount, currency, created_at)
+
+    .. Partitioning Strategy ..
+    PARTITION BY RANGE (created_at)
+    • p2024_q4 (Oct-Dec 2024)
+    • p2025_q1 (Jan-Mar 2025)
+    • p2025_q2 (Apr-Jun 2025)
+    • p2025_q3 (Jul-Sep 2025)
+  }
+
+  class "**users**" as users {
+    .. Primary Key ..
+    ✓ PRIMARY KEY (user_id)
+
+    .. Unique Indexes ..
+    ✓ idx_tenant_email UNIQUE (tenant_id, email)
+
+    .. Regular Indexes ..
+    ✓ idx_tenant_status (tenant_id, status)
+    ✓ idx_created (created_at DESC)
+    ✓ idx_last_login (last_login DESC)
+      WHERE last_login IS NOT NULL
+
+    .. Full-Text Search ..
+    ✓ idx_user_search (first_name, last_name)
+      USING GIN (to_tsvector('spanish', ...))
+  }
+
+  class "**accounts**" as accounts {
+    .. Primary Key ..
+    ✓ PRIMARY KEY (account_id)
+
+    .. Compound Indexes ..
+    ✓ idx_tenant_user (tenant_id, user_id, status)
+    ✓ idx_account_number UNIQUE (tenant_id, account_number)
+
+    .. Filtered Indexes ..
+    ✓ idx_active_accounts (tenant_id)
+      WHERE status = 'active'
+    ✓ idx_low_balance (tenant_id, balance)
+      WHERE balance < 100
+  }
+
+  class "**audit_logs**" as audit {
+    .. Primary Key ..
+    ✓ PRIMARY KEY (log_id)
+
+    .. Compound Indexes ..
+    ✓ idx_tenant_created (tenant_id, created_at DESC)
+    ✓ idx_entity_type (tenant_id, entity_type, entity_id)
+    ✓ idx_user_actions (user_id, created_at DESC)
+
+    .. TTL / Retention ..
+    PARTITION BY RANGE (created_at)
+    Auto-drop partitions older than 7 years
+  }
+
+}
+
+package "Row Level Security Policies" {
+
+  class "**RLS Policies**" as rls {
+    .. Policy: tenant_isolation ..
+    FOR ALL OPERATIONS
+    USING (tenant_id = @current_tenant_id)
+
+    .. Policy: admin_bypass ..
+    FOR ALL OPERATIONS
+    USING (current_user = 'admin_role')
+    WITH CHECK (current_user = 'admin_role')
+
+    .. Policy: read_only_analytics ..
+    FOR SELECT
+    USING (current_user = 'analytics_role')
+
+    .. Aplicado a todas las tablas ..
+    • tenants
+    • users
+    • accounts
+    • transactions
+    • audit_logs
+  }
+
+}
+
+package "Estrategias de Optimización" {
+
+  class "**Query Optimization**" as query_opt {
+    .. Técnicas Aplicadas ..
+    • Compound indexes para queries frecuentes
+    • Partial indexes para subsets específicos
+    • Covering indexes para SELECT comunes
+    • Index-only scans cuando sea posible
+
+    .. Query Hints ..
+    • FORCE INDEX para queries críticas
+    • Query caching (ElastiCache)
+    • Prepared statements
+    • Batch operations
+  }
+
+  class "**Connection Pooling**" as pool {
+    .. Configuración Aurora ..
+    • Max connections: 1000
+    • Connection timeout: 30s
+    • Pool size per service: 20-50
+    • Statement timeout: 60s
+    • Idle timeout: 300s
+
+    .. Connection Manager ..
+    • HikariCP (Java/Spring Boot)
+    • Read/Write splitting
+    • Failover automático
+  }
+
+  class "**Caching Strategy**" as cache {
+    .. ElastiCache Redis ..
+    • User sessions (TTL: 24h)
+    • Account balances (TTL: 60s)
+    • Tenant configs (TTL: 1h)
+    • Transaction summaries (TTL: 5m)
+
+    .. Cache Invalidation ..
+    • Event-driven (pub/sub)
+    • Write-through on updates
+    • Cache-aside pattern
+  }
+
+}
+
+note right of trans
+  **Queries más frecuentes:**
+  1. List transactions by tenant + date
+  2. Get account transactions
+  3. Find high-risk transactions
+  4. Check pending transactions
+
+  Todos optimizados con índices
+  compuestos específicos
+end note
+
+note right of rls
+  **RLS Performance:**
+  • Overhead mínimo (<5%)
+  • Se combina con WHERE clauses
+  • Usa índices existentes
+  • Transparente para app
+end note
+
+note bottom of cache
+  **Cache Hit Rate Target:**
+  • User data: >80%
+  • Account balances: >60%
+  • Tenant configs: >95%
+  • Query results: >50%
+
+  **Reduce DB load en 40-60%**
+end note
+
+trans -[hidden]down- users
+users -[hidden]down- accounts
+accounts -[hidden]down- audit
+
+@enduml

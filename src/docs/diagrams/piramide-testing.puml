@@ -1,0 +1,82 @@
+@startuml piramide-testing
+!theme plain
+skinparam backgroundColor #FFFFFF
+
+' Configuración para la pirámide
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+' Nodos de la pirámide con diferentes tamaños
+package "E2E Tests" as E2E #E74C3C {
+    note as E2E_NOTE
+        **10% de los tests**
+        - Flujos críticos de usuario
+        - Escenarios completos
+        - Alta confianza, alto costo
+        - Más lentos
+    end note
+}
+
+package "                Integration Tests                " as INT #F39C12 {
+    note as INT_NOTE
+        **20% de los tests**
+        - APIs y servicios
+        - Integración con bases de datos
+        - Comunicación entre componentes
+        - Contratos entre servicios
+    end note
+}
+
+package "                                    Unit Tests                                    " as UNIT #27AE60 {
+    note as UNIT_NOTE
+        **70% de los tests**
+        - Lógica de negocio
+        - Funciones y métodos individuales
+        - Bajo costo, alta velocidad
+        - Feedback inmediato
+        - Facilita refactoring
+    end note
+}
+
+' Estructura visual de la pirámide (de arriba hacia abajo)
+E2E -[hidden]down- INT
+INT -[hidden]down- UNIT
+
+' Notas laterales
+note right of E2E
+    **Ejemplos:**
+    - Login y flujo completo
+    - Checkout proceso
+    - Registro de usuario
+end note
+
+note right of INT
+    **Ejemplos:**
+    - Test de API REST
+    - Repositorio + DB
+    - Eventos entre servicios
+end note
+
+note right of UNIT
+    **Ejemplos:**
+    - Validaciones
+    - Cálculos de negocio
+    - Transformaciones de datos
+end note
+
+' Indicadores de velocidad y costo
+note bottom of UNIT
+    **Velocidad de ejecución**
+
+    E2E:          [***--]  (Lento - minutos)
+    Integration:  [**---]  (Medio - segundos)
+    Unit:         [*----]  (Rápido - milisegundos)
+
+    **Costo de mantenimiento**
+
+    E2E:          [*****]  (Alto)
+    Integration:  [***--]  (Medio)
+    Unit:         [*----]  (Bajo)
+end note
+
+@enduml

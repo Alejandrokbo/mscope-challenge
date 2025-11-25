@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor black
+  RoundCorner 10
+}
+
+rectangle "Mes 1-2\nSETUP\n+ CI/CD" as M1 #LightBlue
+rectangle "Mes 3-5\nMIGRACIÓN DB\n+ REFACTOR" as M2 #LightGreen
+rectangle "Mes 5-7\nMULTIPAÍS\n+ ESCALA" as M3 #LightYellow
+rectangle "Mes 6-7\nIA FRAUDE" as M4 #LightPink
+rectangle "Mes 8-9\nIA ASIST.\n+ TESTS 70%" as M5 #LightSalmon
+rectangle "Mes 10-11\nOPTIMIZ.\n+ SECURITY" as M6 #LightSkyBlue
+rectangle "Mes 12\nLAUNCH\nB2C" as M7 #LightGray
+
+M1 --> M2
+M2 --> M3
+M3 --> M4
+M4 --> M5
+M5 --> M6
+M6 --> M7
+
+@enduml

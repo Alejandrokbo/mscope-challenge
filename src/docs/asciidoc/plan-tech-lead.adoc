@@ -1,0 +1,1961 @@
+= Plan de Transformación Tecnológica
+Alejandro Cabo Marchena | https://www.linkedin.com/in/alejandrokbo/[LinkedIn]
+v1.0, 2025-11-25
+:doctype: book
+:toc: left
+:toclevels: 3
+:toc-title: Tabla de Contenidos
+:sectanchors:
+:sectlinks:
+:sectnums:
+:sectnumlevels: 3
+:icons: font
+:source-highlighter: rouge
+:rouge-style: github
+:pdf-theme: themes/mscope-theme.yml
+:pdf-themesdir: themes
+:imagesdir: images
+:chapter-label!:           // <- desactiva "Chapter"
+:figure-caption: Figura
+:table-caption: Tabla
+:listing-caption: Listado
+:experimental:
+:title-page:
+:title-logo-image: image:mscope-logo.png[pdfwidth=3in,align=center]
+:author: Alejandro Cabo Marchena
+:linkedin: https://www.linkedin.com/in/alejandrokbo/
+:revnumber: 1.0
+:revdate: 2025-11-25
+:subject: Plan de Transformación Tecnológica - Prueba Técnica Tech Lead
+:keywords: Tech Lead, mscope, Transformación Digital, AWS, CI/CD, Arquitectura
+
+[.lead]
+Empresa Financiera - Tech Lead Strategy
+
+'''
+
+
+
+== Resumen Ejecutivo
+
+=== Contexto y Desafío
+
+La empresa afronta una expansión a cuatro países y una transición de B2B a B2C con mayor volumen de usuarios. Las deficiencias actuales en QA, la recurrencia de bugs y la baja confianza de los clientes ponen en riesgo este crecimiento. Este plan define una hoja de ruta de 6 a 12 meses para construir una plataforma confiable, automatizada y escalable.
+
+=== Solución Propuesta (Vista de 360°)
+
+*Arquitectura:*
+
+* Multitenant híbrido (shared DB, isolated schema) escalable a 4+ países
+* Microservicios estratégicos (Auth, Core Business, Analytics, Notifications, Integration)
+* CloudFront global + read replicas por región para latencia <300ms
+
+*Calidad y Automatización:*
+
+* CI/CD completo con 7 stages (validate → test → security → build → deploy)
+* Cobertura tests: 70% backend / 60% frontend en 6 meses
+* Deployment frequency: de semanal a múltiple/día
+* MTTR (tiempo recuperación): de 4h a 30min
+
+*Optimización de Costos AWS:*
+
+* Presupuesto total: *68.400€/año* (32% bajo límite de 100K€)
+* Margen de seguridad: 31.600€/año para crecimiento
+* Técnicas: Auto-scaling, Reserved Instances, Fargate Spot, caching agresivo
+
+*Componentes de IA (ROI excepcional):*
+
+[cols="2,1,3,1"]
+|===
+| Componente | Costo/año | Impacto | ROI
+
+| Detección Fraude
+| 2.400€
+| Reduce pérdidas >50K€/año
+| 2.000%
+
+| Chatbot Bedrock
+| *300€*
+| Ahorra ~40K€/año en soporte
+| *13.000%*
+
+| Churn Prediction
+| 4.800€
+| +15-25% retención clientes
+| 300%
+|===
+
+*Equipo Técnico (5 personas - 256.000€/año):*
+
+* 2 Senior (Full-Stack, DevOps) - liderazgo técnico
+* 1 Mid-Level Backend - desarrollo core
+* 2 Junior (Full-Stack, QA) - ejecución y testing
+
+*Timeline: 7 Fases en 12 meses*
+
+image::timeline-fases.png[Timeline 7 Fases en 12 meses,align="center"]
+
+=== Decisiones Clave que Requieren Aprobación
+
+[cols="2,2,2,3"]
+|===
+| Decisión | Opción A (Conservadora) | Opción B (Recomendada) | Impacto
+
+| *Base de datos*
+| Mantener SQL Server
+| Migrar a Aurora MySQL
+| Ahorro 23% (6K€/año), mejor escalabilidad
+
+| *CI/CD*
+| GitLab CI
+| GitHub Actions
+| Gratis hasta 2K min/mes vs 400 min
+
+| *IA Fase 1*
+| Solo Fraude (2.4K€)
+| Fraude + Bedrock (2.7K€)
+| +300€ para ROI 13.000%
+
+| *Enfoque cloud*
+| Multi-cloud
+| AWS optimizado
+| Menor complejidad, focus en optimización
+|===
+
+*Recomendación:* Opción B en todos los casos, con evaluación de SQL Server→Aurora en mes 6 (sin urgencia).
+
+=== Quick Wins (Primeros 3 Meses)
+
+*Mes 1:*
+
+* Pipeline CI/CD básico funcionando → 0 deploys manuales
+* Tests unitarios en 3 servicios críticos → Cobertura 40%
+* Monitoreo básico CloudWatch + alertas
+
+*Mes 2:*
+
+* Tests automáticos reducen bugs 50%
+* Code review obligatorio (Quality Gates)
+* Documentación de arquitectura (ADRs)
+
+*Mes 3:*
+
+* Staging environment con datos anonimizados
+* MTTR <1 hora con runbooks automatizados
+* Primera iteración arquitectura multitenant
+
+=== Riesgos TOP 3 y Mitigación
+
+[cols="2,1,1,3"]
+|===
+| Riesgo | Probabilidad | Impacto | Mitigación
+
+| *Bugs críticos post-launch*
+| Media
+| Alto
+| Tests exhaustivos, canary deployment (10%→50%→100%), rollback automático
+
+| *Sobrecostos AWS*
+| Media
+| Medio
+| Monitoreo semanal, alertas al 80%, revisión trimestral, buffer 31K€
+
+| *Retrasos en timeline*
+| Alta
+| Medio
+| Buffer 20% estimaciones, scope ajustable (IA opcional), comunicación temprana
+|===
+
+=== Presupuesto Total (Año 1)
+
+[cols="2,1,1"]
+|===
+| Concepto | Monto | % Total
+
+| Equipo técnico (5 personas)
+| 256.000€
+| 79%
+
+| Infraestructura AWS
+| 68.400€
+| 21%
+
+| *TOTAL*
+| *324.400€*
+| *100%*
+|===
+
+*Validación:* AWS cumple límite <100K€ con 32% de margen.
+
+=== Métricas de Éxito (6 meses)
+
+* Deployment frequency: Diario (vs semanal actual)
+* Change failure rate: <15% (vs 40% actual)
+* Test coverage: 70% backend, 60% frontend
+* Uptime: 99.5% (vs 98% actual)
+* Bugs producción: -80%
+* Customer satisfaction: >4.5/5
+
+=== Siguiente Paso: Kickoff del Proyecto
+
+*Semana 1-2:*
+
+1. Aprobación presupuesto por C-level
+2. Firma de contratación equipo (publicar ofertas)
+3. Provisión cuentas AWS y herramientas
+
+*Semana 3-4:*
+
+4. Onboarding equipo completo
+5. Setup infraestructura base (Terraform)
+6. Primer sprint: Pipeline CI/CD básico
+
+*Contacto para aprobación:* Tech Lead responsable del proyecto
+
+'''
+
+== Supuestos y Limitaciones
+
+[NOTE]
+====
+Este plan se basa en supuestos razonables para dimensionamiento y cálculos de ROI. Estos valores deben validarse con datos reales del negocio antes de la implementación.
+====
+
+=== Supuestos de Dimensionamiento
+
+*Volumen de clientes (estimación conservadora):*
+
+* Año 1: 10.000 clientes activos/mes
+* Año 2: 50.000 clientes activos/mes
+* Año 3: 100.000 clientes activos/mes
+
+*Países objetivo (ejemplos ilustrativos):*
+
+* España, México, Argentina, Colombia
+* Nota: La selección real de países puede ajustarse según estrategia de negocio
+
+*Soporte al cliente (base para cálculo de chatbot):*
+
+* 20% de clientes contactan soporte mensualmente (estándar industria fintech)
+* 70% de consultas potencialmente automatizables con IA
+* Promedio: 500 tokens input + 300 tokens output por conversación
+
+*Transacciones (base para cálculo de fraude):*
+
+* Volumen estimado: 100.000 transacciones/mes (año 1)
+* Tasa de fraude industria: 0.5-2%
+* Latencia requerida detección: <100ms
+
+=== Supuestos Técnicos
+
+*Infraestructura actual:*
+
+* Cargas de trabajo ejecutándose 24/7 sin optimización
+* Sin auto-scaling configurado
+* Ambientes dev/staging dimensionados igual que producción
+
+*Equipo:*
+
+* Salarios basados en mercado España (ajustables por ubicación)
+* Disponibilidad de talento en el mercado (4-6 semanas hiring)
+* Equipo remoto-first con overlap de 4-6 horas
+
+*Costos AWS:*
+
+* Precios AWS región EU-West-1 (Irlanda)
+* Tipo de cambio: 1 USD = 0.92 EUR (aproximado)
+* Costos pueden variar ±10% según región y negociaciones
+
+=== Limitaciones Conocidas
+
+*Del documento:*
+
+* No se dispone de datos históricos reales de la empresa
+* Volúmenes de transacciones son estimaciones
+* ROI calculado sobre escenarios proyectados
+
+*Del proyecto:*
+
+* Presupuesto limitado: <100.000€/año AWS
+* Equipo pequeño: 5 personas máximo
+* Timeline ajustado: 6-12 meses
+
+'''
+
+== Análisis de Situación Actual
+
+=== Problemática Identificada
+
+*Problemas críticos:*
+
+* QA inexistente - testing manual y reactivo
+* Bugs recurrentes en producción
+* Baja confianza de clientes
+* Sin pipelines CI/CD
+* Ausencia de gobernanza tecnológica
+* Poca trazabilidad de cambios
+* Infraestructura AWS sin cobertura transversal
+
+*Stack tecnológico actual:*
+
+* Frontend: React + Storybook + Librerías UI internas
+* Backend: Java + Spring Boot (Maven)
+* Base de datos: SQL Server
+* Procesamiento: ETLs SQL Server + Python Lambdas
+* Infraestructura: AWS (sin automatización)
+
+=== Desafíos del Negocio
+
+* _Expansión internacional:_ Escalar a 4 países
+* _Cambio de modelo:_ B2B → B2C (menor ticket, mayor volumen)
+* _Requisitos operativos:_ Mayor calidad, resiliencia y eficiencia
+* _Restricciones:_ Presupuesto limitado, equipo pequeño (5 personas)
+
+'''
+
+== Arquitectura Técnica Propuesta
+
+=== Arquitectura Multipaís y Multitenant
+
+==== Diseño de Alto Nivel
+
+image::arquitectura-general.png[Arquitectura Multipaís y Multitenant,align="center"]
+
+==== Estrategia Multitenant
+
+*Modelo híbrido: Shared Database, Isolated Schema*
+
+image::modelo-multitenant.png[Modelo de Datos Multitenant,align="center"]
+
+*Implementación (3 componentes clave):*
+
+*1. Tabla de tenants:*
+```
+tenants: tenant_id (UUID) + country_code + config (JSONB: locale, currency, compliance, feature_flags)
+```
+
+*2. Aislamiento en todas las tablas:*
+```sql
+-- Ejemplo: transactions
+CREATE TABLE transactions (
+    id UUID PRIMARY KEY,
+    tenant_id UUID NOT NULL,  -- FK a tenants
+    user_id UUID, amount DECIMAL, currency VARCHAR(3), ...
+);
+```
+
+*3. Row Level Security (RLS):*
+```sql
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON transactions
+    USING (tenant_id = current_setting('app.current_tenant')::UUID);
+```
+
+[TIP]
+====
+RLS aplica automáticamente el filtro `tenant_id` en todas las queries, garantizando aislamiento sin cambios en código aplicación.
+====
+
+==== Esquema Detallado de Base de Datos
+
+image::modelo-datos-multitenant.png[Esquema Detallado de Base de Datos Multitenant,align="center"]
+
+El modelo incluye:
+
+* *Tabla tenants:* Configuración centralizada por país/organización
+* *Aislamiento en todas las tablas:* tenant_id como columna obligatoria
+* *Auditoría completa:* Trazabilidad de todas las operaciones (audit_logs)
+* *Campos JSONB:* Configuración flexible sin cambios de esquema
+* *Índices compuestos:* Optimizados para queries por tenant
+
+==== Configuración de Tenant (JSONB)
+
+La tabla tenants contiene un campo `config` de tipo JSONB que permite configuración flexible sin cambios de esquema:
+
+image::tenant-config-structure.png[Estructura de Configuración de Tenant,align="center"]
+
+Cada tenant puede tener configuraciones específicas para:
+
+* *Región:* Idioma, moneda, zona horaria
+* *Cumplimiento:* GDPR, regulaciones locales, niveles KYC
+* *Features:* Activar/desactivar funcionalidades por país
+* *Límites:* Montos máximos según regulación local
+* *Integraciones:* Proveedores específicos por mercado
+* *Branding:* Logo, colores, URLs de soporte
+
+==== Flujo de Aislamiento Automático
+
+El aislamiento de datos entre tenants se garantiza mediante Row Level Security (RLS) que opera de forma transparente:
+
+image::tenant-isolation-flow.png[Flujo de Aislamiento de Tenant,align="center"]
+
+*Características del flujo:*
+
+* *JWT contiene tenant_id:* Extraído durante autenticación
+* *Interceptor transparente:* Configura variable de sesión automáticamente
+* *RLS en capa de datos:* Base de datos filtra automáticamente
+* *Seguridad garantizada:* Imposible acceder a datos de otro tenant
+* *Performance óptima:* Aprovecha índices compuestos (tenant_id, ...)
+
+==== Estrategia de Índices y Optimización
+
+Para garantizar performance con el modelo multitenant, se implementan índices estratégicos:
+
+image::database-indexes-optimization.png[Índices y Optimización de Base de Datos,align="center"]
+
+*Optimizaciones clave:*
+
+* *Índices compuestos:* (tenant_id, created_at) para queries frecuentes
+* *Índices parciales:* Solo para subsets críticos (ej: fraud_score > 0.6)
+* *Covering indexes:* Incluyen columnas frecuentemente seleccionadas
+* *Partitioning:* Por fecha en tablas grandes (transactions, audit_logs)
+* *Caching:* ElastiCache para reducir carga 40-60%
+* *Connection pooling:* HikariCP con read/write splitting
+
+*Ventajas de este enfoque:*
+
+* Balance entre aislamiento y costos
+* Facilita backup y recuperación
+* Permite personalización por país/tenant
+* Escalabilidad mediante read replicas
+
+=== Microservicios Estratégicos
+
+image::microservicios.png[Microservicios Estratégicos,align="center"]
+
+==== Servicios Core
+
+*1. Authentication & Authorization Service*
+
+* Gestión de identidad multipaís
+* SSO con OAuth 2.0 / OpenID Connect
+* MFA obligatorio para operaciones financieras
+* Integración con proveedores locales (ej: Clave Fiscal Argentina)
+
+*2. Core Business Service*
+
+* Lógica de negocio principal
+* Gestión de productos financieros
+* Motor de reglas de negocio por país
+* API versioning para compatibilidad B2B/B2C
+
+*3. Analytics & Reporting Service*
+
+* Procesamiento de eventos en tiempo real
+* Dashboards de negocio
+* Compliance reporting por jurisdicción
+* _Componente IA integrado_ (detalle en sección 4)
+
+*4. Notification Service*
+
+* Emails, SMS, push notifications
+* Templates multiidioma
+* Proveedores locales por país
+* Rate limiting y priorización
+
+*5. Integration Service*
+
+* Conectores con sistemas legados
+* APIs de terceros (bancos, pasarelas de pago)
+* ETL orquestación (migración gradual de lambdas)
+
+=== Estrategia de Datos
+
+[NOTE]
+====
+La arquitectura multitenant propuesta es compatible con ambas opciones de base de datos. La decisión puede posponerse hasta mes 6 según resultados iniciales.
+====
+
+==== Opción A: Mantener SQL Server (Baseline)
+
+*Viabilidad:* SQL Server puede soportar la arquitectura multitenant con RLS (Row Level Security).
+
+*Ventajas:*
+
+* Sin riesgo de migración
+* Equipo ya familiarizado con el stack
+* Implementación más rápida (mes 1-2)
+* Menor complejidad operativa inicial
+* Soporte nativo para transacciones complejas
+
+*Desventajas:*
+
+* Costos de licencias elevados (~25.000€/año)
+* Escalabilidad horizontal limitada
+* Replicación global más compleja y costosa
+* Menor ecosistema open-source
+
+*Costo estimado:* ~25.000€/año (licencias + infraestructura)
+
+*Cuándo elegir:* Si se prioriza velocidad de implementación y reducción de riesgo.
+
+==== Opción B: Migrar a Aurora MySQL (Recomendado)
+
+*Justificación:* Optimización de costos y escalabilidad para arquitectura multipaís.
+
+*Ventajas:*
+
+* Reducción de costos 23% (~6.000€/año ahorro)
+* Escalabilidad horizontal con read replicas
+* Replicación global nativa (Aurora Global Database)
+* Compatibilidad MySQL (ecosistema más amplio)
+* Performance hasta 5x vs MySQL estándar
+* Backup automático, point-in-time recovery
+
+*Desventajas:*
+
+* Requiere migración (riesgo medio-bajo)
+* Curva de aprendizaje para el equipo
+* Diferencias de sintaxis SQL (necesita ajustes en queries)
+
+*Plan de migración (si se aprueba):*
+
+*Fase 1 (Mes 3-4): Preparación*
+
+* Análisis de esquema y dependencias
+* Setup Aurora en ambiente staging
+* Pruebas de compatibilidad
+
+*Fase 2 (Mes 4-5): Migración gradual*
+
+* AWS DMS para replicación continua
+* Testing paralelo: SQL Server (read) + Aurora (write/read)
+* Validación de integridad de datos
+
+*Fase 3 (Mes 5-6): Cutover*
+
+* Switchover progresivo por servicio
+* SQL Server → modo read-only → deprecado
+* Monitoreo intensivo post-migración
+
+*Costo estimado:* ~19.200€/año (ahorro 6K€ vs SQL Server)
+
+*Cuándo elegir:* Si se prioriza optimización de costos y escalabilidad a largo plazo.
+
+==== Recomendación del Tech Lead
+
+*Estrategia híbrida (menor riesgo):*
+
+1. *Mes 1-3:* Implementar arquitectura multitenant sobre SQL Server existente
+2. *Mes 3-6:* Evaluar performance y costos reales con carga B2C
+3. *Mes 6-9:* Si los datos validan la migración, ejecutar plan Aurora
+4. *Alternativa:* Si SQL Server cumple expectativas, mantener y optimizar
+
+*Criterios de decisión para mes 6:*
+
+[cols="2,1,1"]
+|===
+| Criterio | Umbral para migrar | Umbral para mantener
+
+| Costo actual SQL Server
+| >22K€/año
+| <18K€/año
+
+| Latencia read replicas
+| >100ms
+| <50ms
+
+| Complejidad replicación
+| Alta
+| Baja
+
+| Presupuesto disponible
+| >10K€ buffer
+| <5K€ buffer
+|===
+
+*Decisión recomendada inicial:* Mantener SQL Server en Fase 1, evaluar en Fase 2.
+
+==== Data Lake para Analytics (S3 + Athena)
+
+image::data-lake-analytics.png[Data Lake Analytics Architecture,align="center"]
+
+'''
+
+== Estrategia de Calidad y Automatización
+
+=== Pirámide de Testing
+
+image::piramide-testing.png[Pirámide de Testing,align="center"]
+
+==== Objetivos de Cobertura (6 meses)
+
+[cols="2,1,1,1"]
+|===
+| Tipo de Test | Mes 3 | Mes 6 | Mes 12
+
+| Unit Tests
+| 50%
+| 70%
+| 85%
+
+| Integration
+| 30%
+| 50%
+| 70%
+
+| E2E
+| 10%
+| 25%
+| 40%
+|===
+
+=== Stack de Testing
+
+*Frontend (React):*
+
+* _Unit/Integration:_ Jest + React Testing Library
+* _E2E:_ Playwright (mejor que Cypress para multipaís)
+* _Visual Regression:_ Percy o Chromatic
+* _Coverage:_ Istanbul
+
+*Backend (Java Spring Boot):*
+
+* _Unit:_ JUnit 5 + Mockito
+* _Integration:_ TestContainers (SQL, Redis)
+* _Contract Testing:_ Pact (comunicación entre microservicios)
+* _Performance:_ JMeter + Gatling
+
+*API Testing:*
+
+* Postman/Newman para regression testing
+* REST Assured para tests programáticos
+
+=== Estrategia CI/CD
+
+==== Pipeline Completo
+
+image::pipeline-cicd.png[Pipeline CI/CD Completo,align="center"]
+
+*Pipeline con 7 stages secuenciales:*
+
+*1. Validate* → Linting (ESLint, Checkstyle) + Format check + Dependency audit
+
+*2. Test* → Unit + Integration tests + Code coverage + SonarQube Quality Gates
+
+*3. Security* → SAST (SonarQube/Semgrep) + Secret scanning + Container scanning (Trivy)
+
+*4. Build* → Docker multistage + Tag commit SHA + Push ECR + SBOM generation
+
+*5. Deploy Dev* → Auto-deploy (branch develop) + Smoke tests + Notificación Slack
+
+*6. Deploy Staging* → Auto-deploy (branch main) + E2E suite completo + Performance baseline
+
+*7. Deploy Production* → Manual approval + Blue-Green + Canary (10%→50%→100%) + Rollback automático si error rate >1%
+
+[TIP]
+====
+Ver configuración completa en Anexo D: Ejemplo de `.github/workflows/main.yml` o GitLab CI.
+====
+
+==== Herramientas CI/CD
+
+*Opción recomendada:__ **GitHub Actions* (si el código está en GitHub)
+
+* Gratis hasta 2000 min/mes (suficiente para equipo pequeño)
+* Integración nativa con GitHub
+* Gran ecosistema de actions
+
+*Alternativa:__ **GitLab CI* (si se usa GitLab)
+
+* 400 min/mes gratis
+* Muy potente y configurable
+
+*IaC (Infrastructure as Code):*
+
+* _Terraform_ para provisioning AWS
+* _AWS CDK_ para recursos específicos AWS
+* _Helm_ para deployments Kubernetes (si se adopta EKS en futuro)
+
+=== Ambientes
+
+[cols="1,2,1,1"]
+|===
+| Ambiente | Propósito | Deploy | Datos
+
+| _Development_
+| Desarrollo local
+| Manual/Auto
+| Sintéticos
+
+| _Integration_
+| CI/CD tests
+| Auto (PR)
+| Sanitizados
+
+| _Staging_
+| Pre-producción
+| Auto (main)
+| Anonimizados
+
+| _Production_
+| Live
+| Manual + Approval
+| Reales
+|===
+
+=== Gobernanza y Trazabilidad
+
+*Git Workflow: GitHub Flow simplificado*
+
+image::git-workflow.png[Git Workflow - GitHub Flow,align="center"]
+
+*Políticas de rama:*
+
+* `main`: protegida, requiere PR + 1 aprobación + CI verde
+* Commits semánticos: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`
+* PR template con checklist (tests, docs, breaking changes)
+* Semantic versioning automático (semantic-release)
+
+*Trazabilidad:*
+
+* Integración Jira/Linear con commits y PRs
+* Changelog automático
+* Release notes generadas desde commits
+* Audit log de deployments
+
+'''
+
+== Componentes con Inteligencia Artificial
+
+image::arquitectura-ia.png[Arquitectura de Componentes de IA,align="center"]
+
+=== Componente 1: Sistema de Detección de Fraude y Anomalías
+
+*Problema que resuelve:*
+Con la migración a B2C y mayor volumen de transacciones, el fraude es un riesgo crítico.
+
+*Solución técnica:*
+
+image::deteccion-fraude-flujo.png[Flujo de Detección de Fraude,align="center"]
+
+*Implementación:*
+
+* _Modelo:_ XGBoost entrenado con datos históricos (si existen) o dataset público (Kaggle Credit Card Fraud)
+* _Features:_ Monto, hora, ubicación, device, velocidad de transacciones, desviación de patrón
+* _Reentrenamiento:_ Semanal con feedback loop (transacciones confirmadas como fraude)
+* _Costo estimado:_ ~$200/mes (SageMaker endpoint ml.t3.medium)
+
+*Beneficios:*
+
+*Reducción de fraude 60-80%
+* ⚡ Decisión en < 100ms
+*Mejora continua con datos reales
+
+=== Componente 2: Asistente Virtual con LLM (Atención al Cliente)
+
+*Problema que resuelve:*
+
+Mayor volumen de clientes B2C requiere soporte escalable sin aumentar headcount.
+
+*Solución técnica:*
+
+image::asistente-virtual-flujo.png[Flujo del Asistente Virtual,align="center"]
+
+*Implementación:*
+
+* _LLM:_ Amazon Bedrock (Claude 3.5 Haiku para costo-beneficio)
+* _Knowledge Base:_ Documentación empresa, FAQs, regulaciones por país
+* _RAG (Retrieval Augmented Generation):_ pgvector en Aurora (optimizado vs OpenSearch Serverless)
+* _Embeddings:_ Bedrock Titan Embeddings ($0.10/1M tokens)
+* _Caching:_ Respuestas a FAQs comunes (60% consultas repetidas)
+* _Idiomas:_ ES, EN (expandible)
+* _Escalamiento:_ Si confianza < 0.7 o cliente pide humano → ticket a soporte
+
+*Supuestos de volumen (año 1):*
+
+* 10.000 clientes activos/mes
+* 20% contactan soporte = 2.000 consultas/mes
+* 70% automatizables = 1.400 conversaciones IA/mes
+* Promedio: 500 tokens input + 300 tokens output por conversación
+
+*Desglose de costos optimizado:*
+
+[cols="2,1,1,2"]
+|===
+| Componente | Costo/mes | Costo/año | Detalle
+
+| Bedrock (Claude Haiku)
+| $1
+| $12
+| 0.7M tokens input + 0.42M output
+
+| Bedrock Embeddings
+| $2
+| $24
+| Vectorización de documentos
+
+| Lambda (orquestación)
+| $5
+| $60
+| Clasificación + routing
+
+| API Gateway
+| $10
+| $120
+| Endpoints chatbot
+
+| S3 (documentos KB)
+| $2
+| $24
+| Almacenamiento knowledge base
+
+| CloudWatch
+| $5
+| $60
+| Logs y métricas
+
+| *TOTAL*
+| *~$25/mes*
+| *~300€/año*
+| Optimizado con caching + pgvector
+|===
+
+*Proyección con crecimiento:*
+
+[cols="1,1,1,1"]
+|===
+| Clientes | Consultas IA/mes | Costo Bedrock/mes | Costo Total/mes
+
+| 10K (año 1)
+| 1.400
+| $1
+| $25
+
+| 50K (año 2)
+| 7.000
+| $5
+| $50
+
+| 100K (año 3)
+| 14.000
+| $10
+| $80
+|===
+
+*ROI del componente:*
+* _Inversión:_ ~300€/año
+* _Ahorro:_ 70% de 2.000 consultas = 1.400 consultas automatizadas
+* _Equivalente:_ 1-2 personas soporte (~40.000€/año)
+* _ROI:_ 13.000% en primer año
+
+*Beneficios:*
+
+* Resolución 24/7 sin intervención humana (70% consultas)
+* ROI excepcional (13.000% primer año)
+* Satisfacción cliente mejorada (respuesta instantánea)
+* Escalable a 100K+ clientes con costos mínimos
+* Datos de interacciones para mejora continua
+
+=== Componente 3: Predicción de Churn y Recomendaciones Personalizadas
+
+*Problema que resuelve:*
+
+En modelo B2C, retención de clientes es crítica. Identificar clientes en riesgo y ofrecer productos relevantes.
+
+*Solución técnica:*
+
+*A) Modelo de Churn Prediction:*
+
+* _Entrada:_ Actividad usuario (login, transacciones, saldo, tiempo desde última operación)
+* _Modelo:_ Gradient Boosting (LightGBM)
+* _Output:_ Probabilidad de churn en próximos 30 días
+* _Acción:_ Si churn_score > 0.6 → campaña retención automática
+
+*B) Motor de Recomendaciones:*
+* *Enfoque híbrido:*
+  - Collaborative filtering (usuarios similares)
+  - Content-based (productos similares a los que usa)
+* _Implementación:_ Amazon Personalize (servicio managed)
+* _Output:_ Top 3 productos recomendados por usuario
+
+*Pipeline diario (4 pasos):*
+
+1. *Extract* → User features desde Aurora (comportamiento últimos 90 días)
+2. *Predict* → Churn scores con LightGBM → Filtrar usuarios alto riesgo (score > 0.6)
+3. *Recommend* → Personalize genera top 3 productos → Enviar campaña retención automática
+4. *Store* → Guardar métricas en S3 para análisis
+
+*Costo estimado:* ~$400/mes (Personalize + SageMaker)
+
+*Beneficios:*
+
+*Reducción de churn 15-25%
+*Aumento de cross-selling
+*Campañas marketing dirigidas
+
+=== Resumen Componentes IA
+
+[cols="2,1,1,2,1,1"]
+|===
+| Componente | Impacto | Costo/año | ROI | Prioridad | Implementación
+
+| Detección Fraude
+| Alto
+| 2.400€
+| Reduce pérdidas >50K€/año
+| Alta
+| Mes 4-6
+
+| Asistente Virtual (Bedrock)
+| Alto
+| *300€*
+| *Ahorra ~40K€/año*
+| Alta
+| Mes 7-9
+
+| Churn + Recomendaciones
+| Medio
+| 4.800€
+| +15-25% retención
+| Media
+| Mes 10-12 (opcional)
+|===
+
+*Total año 1 (Fraude + Bedrock):* 2.700€/año | *Total año 2 (+ Churn):* 7.500€/año
+
+*Estrategia de implementación:*
+
+1. *Fase 1 (Mes 4-6):* Detección de Fraude - crítico para protección B2C
+2. *Fase 2 (Mes 7-9):* Asistente Virtual Bedrock - ROI excepcional (13.000%)
+3. *Fase 3 (Mes 10-12):* Churn Prediction - evaluar según presupuesto disponible
+
+[NOTE]
+====
+Ver detalles técnicos completos de implementación Bedrock en sección 4.2 "Asistente Virtual con LLM", incluyendo desglose de costos por componente ($25/mes) y estrategias de optimización (caching 60%, pgvector).
+====
+
+'''
+
+== Estructura del Equipo Técnico
+
+=== Composición del Equipo (5 personas)
+
+==== _Senior Full-Stack Engineer #1_ (SR)
+*Rol:* Tech Lead / Arquitecto
+*Responsabilidades:*
+
+* Diseño de arquitectura y decisiones técnicas
+* Ownership de microservicios core (Auth, Core Business)
+* Code reviews y mentoring
+* Establecer estándares y best practices
+* Planificación técnica y roadmap
+
+*Stack:* Java + Spring Boot, React, AWS, Arquitectura de software
+
+*Profile:* 5+ años experiencia, liderazgo técnico, experiencia en fintech/finanzas es plus
+
+'''
+
+==== _Senior DevOps/SRE Engineer_ (SR)
+*Rol:* Infrastructure & Reliability Lead
+*Responsabilidades:*
+
+* Diseño e implementación de pipelines CI/CD
+* Infraestructura como código (Terraform)
+* Monitoreo, logging, alertas (CloudWatch, Datadog)
+* Optimización de costos AWS
+* Security hardening y compliance
+* Disaster recovery y backups
+
+*Stack:* AWS (ECS, RDS, Lambda, S3), Terraform, Docker, CI/CD, observability tools
+
+*Profile:* 4+ años experiencia DevOps/SRE, certificación AWS (Solutions Architect/DevOps) es plus
+
+'''
+
+==== _Mid-Level Backend Engineer_ (MID)
+*Rol:* Backend Developer
+*Responsabilidades:*
+
+* Desarrollo de microservicios (Integration, Notification)
+* Implementación de tests unitarios e integración
+* Migración de ETLs de lambdas Python a servicios managed
+* Integración con APIs de terceros (bancos, pasarelas)
+* Documentación técnica
+
+*Stack:* Java + Spring Boot, Python, SQL, AWS Lambda, APIs REST
+
+*Profile:* 2-3 años experiencia backend, conocimiento de arquitecturas distribuidas
+
+'''
+
+==== _Junior Full-Stack Developer #1_ (JR)
+*Rol:* Frontend-focused Developer
+*Responsabilidades:*
+
+* Desarrollo de componentes React
+* Implementación de tests frontend (Jest, Playwright)
+* Mantenimiento de Storybook
+* Implementación de UI/UX designs
+* Bug fixing y mejoras de rendimiento
+
+*Stack:* React, TypeScript, Jest, Storybook, CSS-in-JS
+
+*Profile:* 0-1 año experiencia, formación en desarrollo web, capacidad de aprendizaje
+
+'''
+
+==== _Junior QA Automation Engineer_ (JR)
+*Rol:* Quality Assurance & Testing
+*Responsabilidades:*
+
+* Desarrollo de tests E2E (Playwright)
+* Configuración de CI para tests automáticos
+* Testing manual exploratorio (inicialmente)
+* Documentación de casos de prueba
+* Reporte de bugs y seguimiento
+* Colaborar en establecer estrategia de QA
+
+*Stack:* Playwright, Postman, Jest, JUnit, básico de Java/JavaScript
+
+*Profile:* 0-1 año experiencia, conocimientos de testing, interés en automatización
+
+'''
+
+=== Organización y Metodología
+
+*Metodología:* Scrum adaptado (2 semanas sprints)
+
+*Estructura de equipo:*
+
+image::team-structure.png[Estructura del Equipo Técnico,align="center"]
+
+*Ceremonias:*
+
+* Daily standup (15 min, async Slack + 2x/semana sync)
+* Sprint planning (2h cada 2 semanas)
+* Sprint review/demo (1h)
+* Retrospectiva (1h)
+* Refinement (1h semanal)
+
+*Horario de trabajo:*
+
+* Preferiblemente overlap de 4-6 horas para colaboración
+* Flexible / remoto-first
+* On-call rotation (SR y MID) post lanzamiento
+
+=== Onboarding y Desarrollo
+
+*Plan de Onboarding (primeras 2 semanas):*
+
+*Semana 1:*
+
+* Setup de entorno de desarrollo
+* Documentación de arquitectura y contexto negocio
+* Acceso a herramientas (AWS, GitHub, Jira, Slack)
+* Pair programming con Tech Lead
+* Primera tarea sencilla (bug fix o small feature)
+
+*Semana 2:*
+
+* Ownership de una historia de usuario
+* Participación en code reviews
+* Presentación de primeros resultados
+
+*Desarrollo continuo:*
+
+* _Juniors:_ 1 hora/semana de mentoring con seniors
+* _Todo el equipo:_ 2 horas/semana "learning time" (cursos, experimentación)
+* _Knowledge sharing:_ 1 presentación técnica/mes por cualquier miembro
+* _Budget formación:_ $500/persona/año (cursos, certificaciones)
+
+=== Presupuesto de Equipo
+
+*Estimación salarial referencial (mercado España 2025):*
+
+[cols="2,1,1,2"]
+|===
+| Rol | Sueldo Bruto/Año | Coste Empresa/Año | Contexto
+
+| SR Full-Stack
+| 50-60K€
+| 63-75K€
+| 5+ años experiencia, fintech es plus
+
+| SR DevOps
+| 50-60K€
+| 63-75K€
+| Certificación AWS recomendada
+
+| MID Backend
+| 35-42K€
+| 44-53K€
+| 2-4 años, arquitecturas distribuidas
+
+| JR Full-Stack
+| 25-30K€
+| 32-38K€
+| 0-2 años, potencial de crecimiento
+
+| JR QA
+| 24-28K€
+| 30-35K€
+| Interés en automatización
+
+| *TOTAL (estimado)*
+| *190-220K€*
+| *240-275K€*
+| Media: ~*256K€*
+|===
+
+[NOTE]
+====
+*Consideraciones:*
+
+- Rangos basados en mercado España (Madrid/Barcelona)
+- Ajustar según ubicación: -15-20% ciudades medianas, +10-15% perfiles muy senior
+- Costes empresa incluyen: seguridad social (~30%), equipamiento, software licenses
+- Salarios pueden variar ±15% según skills específicas y negociación
+====
+
+'''
+
+== Plan de Proyecto (6-12 meses)
+
+=== Fases del Proyecto
+
+==== *Fase 0: Preparación y Setup (Mes 1)*
+*Objetivos:*
+
+* Onboarding del equipo
+* Setup de infraestructura base
+* Definición de estándares y procesos
+
+*Entregables:*
+
+* Equipo contratado y onboarded
+* Repositorios Git configurados con protecciones
+* Ambientes AWS provisionados (dev, staging, prod)
+* Herramientas CI/CD configuradas (pipelines básicos)
+* Terraform setup para IaC
+* Monitoreo básico (CloudWatch, alertas)
+* Documentación de arquitectura y ADRs (Architecture Decision Records)
+
+*Hitos:*
+
+* Semana 2: Equipo completo onboarded
+* Semana 3: Infraestructura base lista
+* Semana 4: Primer pipeline CI/CD funcionando
+
+'''
+
+==== *Fase 1: Fundación - Quality & CI/CD (Mes 2-3)*
+*Objetivos:*
+
+* Establecer base sólida de calidad
+* Implementar CI/CD completo
+* Iniciar testing de código existente
+
+*Entregables:*
+
+* Pipelines CI/CD completos (build, test, deploy)
+* Tests unitarios en servicios críticos (>40% cobertura)
+* Linting y formateo automático
+* SonarQube integrado con quality gates
+* Primeros tests E2E en flujos críticos
+* Estrategia de branching y code review establecida
+* Documentación técnica actualizada
+
+*KPIs:*
+
+* Coverage backend: 40%
+* Coverage frontend: 35%
+* 100% de PRs con CI verde antes de merge
+* Code review en <24h
+
+'''
+
+==== *Fase 2: Migración de Datos y Arquitectura Base (Mes 3-5)*
+*Objetivos:*
+
+* Migrar de SQL Server a Aurora
+* Implementar arquitectura multitenant
+* Refactorizar servicios críticos
+
+*Entregables:*
+
+* Aurora RDS provisionado y configurado
+* DMS configurado para replicación continua
+* Schema multitenant implementado con RLS
+* Migración de datos completada y validada
+* Auth service refactorizado (multitenant)
+* Core Business service refactorizado
+* Tests de integración con nueva DB
+
+*Hitos:*
+
+* Mes 3: Aurora setup + replicación inicial
+* Mes 4: Testing paralelo SQL Server + Aurora
+* Mes 5: Cutover a Aurora en producción
+
+*Riesgos:*
+
+* Pérdida de datos en migración → Mitigación: Validación exhaustiva + rollback plan
+* Downtime en cutover → Mitigación: Migración en ventana de bajo tráfico + blue-green
+
+'''
+
+==== *Fase 3: Multipaís y Escalabilidad (Mes 5-7)*
+*Objetivos:*
+
+* Implementar soporte multipaís
+* Configurar infraestructura global
+* Optimizar rendimiento
+
+*Entregables:*
+
+* CloudFront con distribución global
+* API Gateway con rate limiting
+* Servicio de localización (i18n)
+* Read replicas en regiones target (EU, LATAM)
+* Feature flags por país/tenant
+* Compliance por jurisdicción (GDPR, local regulations)
+* Caching distribuido (ElastiCache)
+* Tests de carga y performance tuning
+
+*KPIs:*
+
+* Latencia API p95 <300ms (global)
+* Throughput: 1000 req/s
+* Disponibilidad: 99.9%
+
+'''
+
+==== *Fase 4: Inteligencia Artificial - Fraude (Mes 6-7)*
+*Objetivos:*
+
+* Implementar detección de fraude en tiempo real
+
+*Entregables:*
+
+* Data pipeline para features de fraude (Kinesis)
+* Modelo ML entrenado y validado (XGBoost)
+* SageMaker endpoint deployado
+* Integración en flujo de transacciones
+* Dashboard de monitoreo de fraude
+* Feedback loop para reentrenamiento
+* Tests A/B para validar efectividad
+
+*Métricas:*
+
+* Precisión modelo: >90%
+* False positive rate: <5%
+* Latencia detección: <100ms
+
+'''
+
+==== *Fase 5: Automatización Completa y IA - Asistente (Mes 8-9)*
+*Objetivos:*
+
+* Alcanzar cobertura de tests objetivo
+* Implementar asistente virtual
+
+*Entregables:*
+
+* Cobertura tests: 70% unit, 50% integration, 25% E2E
+* Visual regression testing implementado
+* Bedrock + Knowledge Base configurado
+* Chatbot integrado en web/app
+* Dashboard de métricas de soporte
+* Documentación knowledge base actualizada
+
+*KPIs:*
+
+* Tests automáticos: >500 test cases
+* Chatbot resolución: >60% consultas
+* CSAT (Customer Satisfaction): >4/5
+
+'''
+
+==== *Fase 6: Optimización y B2C Launch Prep (Mes 10-11)*
+*Objetivos:*
+
+* Optimizar costos AWS
+* Preparar lanzamiento B2C
+* Hardening de seguridad
+
+*Entregables:*
+
+* Rightsizing de recursos AWS
+* Reserved instances / Savings Plans
+* Auto-scaling configurado
+* Security audit completo (OWASP Top 10)
+* Penetration testing
+* Disaster recovery plan testeado
+* Documentación de usuario final
+* Onboarding flow B2C optimizado
+
+*Ahorro costos:*
+
+* Target: 30-40% reducción mediante optimización
+
+'''
+
+==== *Fase 7: Lanzamiento B2C y Estabilización (Mes 12)*
+*Objetivos:*
+
+* Lanzamiento progresivo B2C
+* Monitoreo intensivo
+* Bug fixing reactivo
+
+*Entregables:*
+
+* Soft launch (10% usuarios)
+* Monitoreo de métricas en tiempo real
+* Canary deployment automático
+* Full launch (100%)
+* Post-mortem de incidentes
+* Plan de mejora continua
+* Retrospectiva del proyecto completo
+
+*Criterios de éxito:*
+
+* Error rate <0.5%
+* Uptime >99.9%
+* NPS >40
+
+'''
+
+=== Roadmap Visual
+
+image::roadmap-visual.png[Timeline 7 Fases en 12 meses,align="center"]
+
+=== Dependencias Críticas
+
+[source,mermaid]
+----
+graph TD
+    A[Fase 0: Setup] --> B[Fase 1: Quality & CI/CD]
+    B --> C[Fase 2: Migración DB]
+    C --> D[Fase 3: Multipaís]
+    D --> E[Fase 4: IA Fraude]
+    B --> F[Fase 5: IA Asistente]
+    D --> G[Fase 6: Optimización]
+    E --> G
+    F --> G
+    G --> H[Fase 7: Launch B2C]
+----
+
+*Camino crítico:*
+Setup → CI/CD → Migración DB → Multipaís → Optimización → Launch
+
+'''
+
+== Estrategia de Optimización de Costos AWS
+
+=== Objetivo: < 100.000€/año
+
+*Distribución presupuestaria optimizada:*
+
+[cols="2,1,1,1,2"]
+|===
+| Servicio | Costo Mensual | Costo Anual | % Total | Detalle
+
+| _Compute (ECS Fargate)_
+| 2.000€
+| 24.000€
+| 35%
+| Auto-scaling + Fargate Spot
+
+| _Database (Aurora RDS)_
+| 1.600€
+| 19.200€
+| 28%
+| Reserved Instances + rightsizing
+
+| _Storage (S3 + Backups)_
+| 400€
+| 4.800€
+| 7%
+| Lifecycle policies
+
+| _Networking (CloudFront, Data Transfer)_
+| 650€
+| 7.800€
+| 11%
+| Compresión + VPC endpoints
+
+| _AI/ML (SageMaker, Bedrock)_
+| 625€
+| 7.500€
+| 11%
+| Bedrock optimizado ($25/mes)
+
+| _Otros (CloudWatch, Secrets, etc.)_
+| 200€
+| 2.400€
+| 4%
+| Logs retention policies
+
+| _Buffer contingencia_
+| 225€
+| 2.700€
+| 4%
+| Imprevistos
+
+| *TOTAL*
+| *5.700€*
+| *68.400€*
+| *100%*
+|
+|===
+
+*Margen de seguridad:* 31.600€/año (32% bajo el límite de 100K€)
+
+*Desglose AI/ML optimizado (625€/mes):*
+
+* SageMaker (Detección Fraude): 200€/mes
+* _Bedrock + infraestructura (Chatbot): 25€/mes_ ← pgvector + caching
+* Amazon Personalize (Churn): 400€/mes (opcional fase 3)
+
+=== Estrategias de Optimización (Resumen)
+
+*Tabla consolidada de técnicas aplicadas por servicio:*
+
+[cols="1,1,1,1,3"]
+|===
+| Servicio | Sin Optimizar | Optimizado | % Ahorro | Técnicas Clave Aplicadas
+
+| *Compute (ECS)*
+| 3.500€/mes
+| 2.000€/mes
+| 43%
+| • Auto-scaling (1 instancia horas valle) • Fargate Spot para servicios no críticos • Rightsizing: 0.25 vCPU servicios ligeros
+
+| *Database*
+| 2.800€/mes
+| 1.600€/mes
+| 43%
+| • Reserved Instances (1 año, partial upfront) • Aurora Serverless v2 para dev/staging • Snapshot retention 7 días • Caching agresivo (ElastiCache)
+
+| *Storage (S3)*
+| 800€/mes
+| 400€/mes
+| 50%
+| • Lifecycle policies (90d→IA, 365d→Glacier) • Intelligent-Tiering para data lake
+
+| *Networking*
+| 950€/mes
+| 650€/mes
+| 32%
+| • CloudFront con compresión Brotli/Gzip • VPC Endpoints (evita NAT Gateway) • Regional optimization
+
+| *AI/ML*
+| 1.250€/mes
+| 625€/mes
+| 50%
+| • SageMaker: ml.t3.medium + serverless inference • Bedrock: Haiku + cache Redis (60% hits) • pgvector vs OpenSearch (-$144/mes) • Personalize diferido a Fase 3
+
+| *Otros*
+| 300€/mes
+| 200€/mes
+| 33%
+| • Logs retention optimizada • Secrets Manager consolidado
+
+| *TOTAL*
+| *9.600€/mes*
+| *5.700€/mes*
+| *41%*
+| *Ahorro anual: 46.800€*
+|===
+
+=== Detalles por Servicio
+
+==== 1. Compute (ECS Fargate): 3.500€ → 2.000€/mes
+
+*Auto-scaling:* 10 microservicios x 2 instancias HA → escalar a 1 en horas valle (23:00-07:00)
+
+*Fargate Spot:* Analytics, ETLs, batch processing (70% descuento)
+
+*Rightsizing:* Monitoreo 2 semanas → ajustar 0.5 vCPU a 0.25 vCPU para servicios ligeros
+
+==== 2. Database: 2.800€ → 1.600€/mes
+
+*Reserved Instances:* db.r5.large con compromiso 1 año (30-40% descuento)
+
+*Aurora Serverless v2:* Dev/staging solo horario laboral
+
+*Query optimization:* Índices + caching ElastiCache reduce carga DB 40%
+
+==== 3. Storage (S3): 800€ → 400€/mes
+
+*Lifecycle policies:* Standard → IA (90 días) → Glacier (365 días)
+
+*Intelligent-Tiering:* Movimiento automático para data lake
+
+==== 4. Networking: 950€ → 650€/mes
+
+*CloudFront:* Compresión Brotli/Gzip (20% menos bandwidth)
+
+*VPC Endpoints:* Para S3, DynamoDB (evita costos NAT Gateway)
+
+*Regional optimization:* Read replicas cerca de usuarios
+
+==== 5. AI/ML: 1.250€ → 625€/mes (Año 1: solo 225€/mes)
+
+*Optimización Bedrock (caso de estudio):*
+
+[cols="2,2,2,1"]
+|===
+| Concepto | Antes | Después | Ahorro
+
+| Modelo LLM
+| Sonnet ($3/$15 por 1M tokens)
+| Haiku ($0.25/$1.25)
+| 92%
+
+| Vector DB
+| OpenSearch Serverless ($144/mes)
+| pgvector en Aurora ($0)
+| 100%
+
+| Cache hit rate
+| 0%
+| 60% (Redis)
+| 60% llamadas
+
+| Embeddings
+| Tiempo real
+| Batch 1x/semana
+| 80%
+
+| *Total Bedrock*
+| *$500/mes*
+| *$25/mes*
+| *95%*
+|===
+
+*Componentes AI/ML Año 1:*
+- SageMaker (Fraude): $200/mes - ml.t3.medium + auto-scaling
+- Bedrock (Chatbot): $25/mes - Haiku + caching + pgvector
+- *Total: $225/mes (2.700€/año)*
+
+*Año 2 (opcional):* + Personalize ($400/mes) o custom LightGBM ($50/mes)
+
+=== Monitoreo de Costos
+
+*Herramientas:*
+
+1. *AWS Cost Explorer*
+   - Alertas si gasto mensual > $7,500
+   - Reports semanales por servicio
+
+2. *AWS Budgets*
+   - Presupuesto mensual: $7,000
+   - Alerta al 80% y 100%
+
+3. _Infracost_ (CI/CD)
+   - Preview de costos en PRs de Terraform
+   - Prevenir desviaciones antes de deploy
+
+4. _Kubecost / CloudHealth_ (opcional)
+   - Dashboard centralizado
+   - Recomendaciones automatizadas
+
+=== Revisión Trimestral
+
+*Proceso:*
+
+1. Review de costos por servicio (vs presupuesto)
+2. Análisis de tendencias
+3. Identificación de "waste" (recursos no usados)
+4. Ajuste de rightsizing
+5. Evaluación de nuevas opciones de ahorro (nuevos tipos de instancia, etc.)
+
+'''
+
+== Gestión de Riesgos
+
+=== Matriz de Riesgos
+
+[cols="2,1,1,3"]
+|===
+| Riesgo | Probabilidad | Impacto | Mitigación
+
+| _Bugs críticos en producción post-launch_
+| Media
+| Alto
+| Tests exhaustivos, canary deployment, rollback automático
+
+| _Sobrecostos AWS_
+| Media
+| Medio
+| Monitoreo continuo, alertas, revisiones mensuales
+
+| _Pérdida de datos en migración DB_
+| Baja
+| Crítico
+| Backups, validación dual, rollback plan, dry-runs
+
+| _Retrasos en timeline_
+| Alta
+| Medio
+| Buffer 20% en estimaciones, scope ajustable, comunicación temprana
+
+| _Rotación de equipo (attrition)_
+| Media
+| Alto
+| Documentación exhaustiva, pair programming, knowledge sharing
+
+| _Problemas de compliance/regulatorio_
+| Baja
+| Alto
+| Asesoría legal, auditorías, feature flags por país
+
+| _Dependencia de proveedor (AWS)_
+| Baja
+| Medio
+| Abstracción de infra, evitar vendor lock-in crítico
+
+| _Incidentes de seguridad_
+| Media
+| Crítico
+| Security audits, pentesting, SAST/DAST, incident response plan
+|===
+
+=== Plan de Contingencia
+
+*Escenarios críticos:*
+
+*1. Caída de producción (RTO: 1 hora)*
+
+* Multi-AZ deployment (Aurora, ECS)
+* Automated health checks + auto-restart
+* Runbook de incidentes
+* On-call rotation
+
+*2. Pérdida de datos (RPO: 15 minutos)*
+
+* Backups automáticos cada 15 min (Aurora)
+* Point-in-time recovery
+* Cross-region backup replication
+
+*3. Vulnerabilidad de seguridad crítica*
+
+* Hotfix pipeline (bypass aprobaciones si es CVE crítico)
+* Security response team (SR DevOps + Tech Lead)
+* Comunicación a clientes si aplica (24h)
+
+'''
+
+== Métricas de Éxito (KPIs)
+
+=== KPIs Técnicos
+
+[cols="2,1,1,1"]
+|===
+| Métrica | Baseline (actual) | Mes 6 | Mes 12
+
+| _Test Coverage (Backend)_
+| 0%
+| 70%
+| 85%
+
+| _Test Coverage (Frontend)_
+| 0%
+| 60%
+| 75%
+
+| _Deployment Frequency_
+| Semanal
+| Diario
+| Múltiple/día
+
+| _Lead Time for Changes_
+| 2 semanas
+| 2 días
+| <24 horas
+
+| _Mean Time to Recovery (MTTR)_
+| 4 horas
+| 1 hora
+| 30 min
+
+| _Change Failure Rate_
+| 40%
+| 15%
+| <10%
+
+| _Uptime_
+| 98%
+| 99.5%
+| 99.9%
+
+| _API Latency (p95)_
+| 800ms
+| 400ms
+| <300ms
+|===
+
+=== KPIs de Negocio
+
+[cols="2,1"]
+|===
+| Métrica | Objetivo Mes 12
+
+| _Reducción de bugs en producción_
+| -80%
+
+| _Customer Satisfaction (CSAT)_
+| >4.5/5
+
+| _Reducción de tiempo de soporte_
+| -60% (gracias a chatbot)
+
+| _Detección de fraude_
+| >90% precisión
+
+| _Reducción de churn_
+| -20%
+
+| _Time-to-market nuevas features_
+| -50%
+|===
+
+=== KPIs de Costos
+
+[cols="2,1"]
+|===
+| Métrica | Objetivo
+
+| _Costo AWS total_
+| <84.000€/año
+
+| _Costo por transacción_
+| <0.02€
+
+| _Costo equipo + infra_
+| <340.000€/año
+|===
+
+'''
+
+== Conclusiones y Próximos Pasos
+
+=== Resumen de la Propuesta
+
+Este plan de transformación establece una base sólida para que la empresa financiera:
+
+_Escale confiablemente_ a 4 países con arquitectura multitenant moderna
+
+_Reduzca bugs dramáticamente_ mediante automatización de QA y CI/CD robusto
+
+_Optimice costos_ manteniendo AWS bajo 100K€/año con margen de seguridad
+
+_Incorpore IA estratégicamente_ para detectar fraude, automatizar soporte y retener clientes
+
+_Opere con equipo eficiente_ de 5 personas altamente productivo
+
+_Entregue en 6-12 meses_ con hitos claros y riesgos mitigados
+
+=== Análisis de ROI - Componentes de IA
+
+*Destacado: Implementación de AWS Bedrock*
+
+La incorporación de IA, especialmente AWS Bedrock para el asistente virtual, representa una inversión con ROI excepcional:
+
+[cols="2,1,3"]
+|===
+| Métrica | Valor | Detalle
+
+| _Inversión año 1_
+| 300€
+| Bedrock + infraestructura optimizada
+
+| _Ahorro en soporte_
+| ~40.000€
+| Automatización 70% de 2.000 consultas/mes
+
+| *ROI*
+| *13.000%*
+| Retorno en primer año
+
+| *Break-even*
+| *3 días*
+| Recuperación de inversión
+
+| _Escalabilidad_
+| Alta
+| 100K clientes = solo 1.000€/año
+|===
+
+*Comparativa de inversiones IA:*
+
+image::ai-roi-comparison.png[Comparativa de ROI - Componentes IA,align="center"]
+
+*Claves del éxito de Bedrock:*
+
+1. _Modelo correcto:_ Claude 3.5 Haiku (no Sonnet) reduce costos 92%
+2. _Caching inteligente:_ 60% de consultas no llaman a la API
+3. _RAG optimizado:_ pgvector en Aurora (sin OpenSearch Serverless = ahorro $144/mes)
+4. _Escalabilidad lineal:_ Costo crece proporcionalmente, no exponencialmente
+
+*Recomendación estratégica:*
+
+Implementar Bedrock en _Fase 2 (mes 7-9)_ como prioridad alta debido a:
+
+* ROI excepcional (13.000% año 1)
+* Bajo riesgo técnico (servicio managed)
+* Impacto inmediato en satisfacción cliente
+* Escalable sin aumentar headcount
+
+*Presupuesto total optimizado:*
+
+[cols="2,1,1,1"]
+|===
+| Concepto | Año 1 | Año 2 | Año 3
+
+| Infraestructura AWS
+| 68.400€
+| 72.000€
+| 75.000€
+
+| Equipo técnico
+| 256.000€
+| 270.000€
+| 285.000€
+
+| *TOTAL*
+| *324.400€*
+| *342.000€*
+| *360.000€*
+
+| _Límite AWS (check)_
+| 31.600€ bajo
+| 28.000€ bajo
+| 25.000€ bajo
+|===
+
+=== Factores Críticos de Éxito
+
+1. _Compromiso ejecutivo:_ Soporte de C-level para cambio cultural (testing, CI/CD)
+2. _Equipo correcto:_ Contratar perfiles senior con experiencia relevante
+3. _Foco en calidad desde día 1:_ No "deuda técnica" - hacer bien desde el inicio
+4. _Comunicación continua:_ Transparencia con stakeholders sobre progreso y riesgos
+5. _Flexibilidad:_ Ajustar scope si es necesario para cumplir timeline
+
+=== Recomendaciones Adicionales
+
+*Corto plazo (primeros 3 meses):*
+
+* Contratar equipo inmediatamente (proceso de hiring: 4-6 semanas)
+* Priorizar CI/CD y testing - es la base de todo
+* Establecer cultura de code review y pair programming
+
+*Medio plazo (meses 4-9):*
+
+* No comprometer calidad por velocidad
+* Celebrar wins pequeños con el equipo
+* Mantener documentación actualizada (ADRs, runbooks)
+
+*Largo plazo (post-launch):*
+
+* Establecer programa de mejora continua
+* Invertir en desarrollo del equipo
+* Escuchar feedback de clientes y adaptar
+
+=== Próximos Pasos Inmediatos
+
+1. _Aprobación del plan_ por stakeholders
+2. _Asignación de presupuesto_ (equipo + AWS)
+3. _Inicio de proceso de hiring_ (publicar ofertas)
+4. _Setup de cuentas AWS_ y herramientas
+5. _Kickoff del proyecto_ (semana 1 del Mes 1)
+
+'''
+
+== Anexos
+
+=== Anexo A: Stack Tecnológico (Resumen)
+
+[cols="1,3"]
+|===
+| Capa | Tecnologías Principales
+
+| *Frontend*
+| React 18 + TypeScript + Vite • Tailwind CSS • Storybook 7 • Jest + Playwright
+
+| *Backend*
+| Java 17 + Spring Boot 3.x + Maven • Spring Security OAuth 2.0 • JUnit 5 + TestContainers
+
+| *Base de Datos*
+| SQL Server (actual) / Aurora MySQL 8.x (opción) • Redis (ElastiCache) • OpenSearch
+
+| *Infrastructure*
+| AWS ECS Fargate • RDS • S3 • CloudFront • Lambda • SageMaker • Bedrock • Terraform + Docker
+
+| *CI/CD & Quality*
+| GitHub Actions / GitLab CI • SonarQube • Trivy • Terraform Cloud
+
+| *Observability*
+| CloudWatch (logs, metrics, alarms) • AWS X-Ray (tracing)
+|===
+
+=== Anexo B: Referencias Clave
+
+[cols="1,2,2"]
+|===
+| Categoría | Recurso | URL
+
+| *Arquitectura*
+| AWS Well-Architected
+| aws.amazon.com/architecture/well-architected
+
+|
+| 12-Factor App
+| 12factor.net
+
+| *Testing*
+| Testing Pyramid (Fowler)
+| martinfowler.com/articles/practical-test-pyramid
+
+| *DevOps*
+| DORA Metrics
+| cloud.google.com/blog/products/devops-sre
+
+|
+| SRE Book (Google)
+| sre.google/books
+
+| *ML/AI*
+| SageMaker Best Practices
+| docs.aws.amazon.com/sagemaker
+|===
+
+=== Anexo C: Configuraciones Técnicas
+
+*Contenido disponible bajo demanda:*
+
+- Ejemplo completo pipeline CI/CD (`.github/workflows/main.yml`)
+- Configuraciones Terraform para infraestructura AWS
+- Políticas de lifecycle S3 y optimización de costos
+- Configuración auto-scaling ECS Fargate
+
+=== Anexo D: Glosario
+
+*B2B/B2C:* Business to Business / Business to Consumer
+
+*CI/CD:* Continuous Integration / Continuous Deployment
+
+*ECS:* Elastic Container Service (AWS)
+
+*RLS:* Row Level Security (PostgreSQL/Aurora)
+
+*SAST/DAST:* Static/Dynamic Application Security Testing
+
+*SRE:* Site Reliability Engineering
+
+'''
+
+*Documento preparado para:* mscope - Prueba Técnica Tech Lead
+
+*Fecha:* 2025-11-25
+
+*Versión:* 1.0
+
+*Autor:* Alejandro Cabo Marchena
+
+'''
+
+*Este plan es un documento vivo y debe ser revisado y actualizado regularmente a medida que el proyecto progresa.*

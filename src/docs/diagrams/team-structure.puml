@@ -1,0 +1,73 @@
+@startuml team-structure
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+title Estructura del Equipo Técnico (5 Personas)
+
+skinparam package {
+    BackgroundColor #F0F8FF
+    BorderColor #2C5AA0
+    FontSize 11
+}
+
+skinparam component {
+    BackgroundColor #E8F4F8
+    BorderColor #5D8BC7
+    FontSize 10
+}
+
+package "Equipo Técnico - 5 Personas" {
+
+  component "**Tech Lead**\n(SR Full-Stack)\n━━━━━━━━━━━━━━\n• Arquitectura y decisiones técnicas\n• Code reviews y mentoring\n• Ownership: Auth, Core Business\n• Planificación técnica" as TechLead #LightGreen
+
+  package "Backend Team" {
+    component "**SR DevOps/SRE**\n━━━━━━━━━━━━━━\n• CI/CD pipelines\n• Infraestructura (Terraform)\n• Monitoreo y alertas\n• Optimización AWS\n• Security & compliance" as DevOps #LightBlue
+
+    component "**MID Backend Engineer**\n━━━━━━━━━━━━━━\n• Microservicios (Integration, Notification)\n• Tests unitarios/integración\n• Migración ETLs\n• APIs de terceros" as Backend #LightCyan
+
+    component "**JR QA Automation**\n━━━━━━━━━━━━━━\n• Tests E2E (Playwright)\n• CI para tests automáticos\n• Testing manual exploratorio\n• Documentación casos de prueba" as QA #Lavender
+  }
+
+  package "Frontend Team" {
+    component "**JR Full-Stack**\n(Frontend-focused)\n━━━━━━━━━━━━━━\n• Componentes React\n• Tests frontend (Jest, Playwright)\n• Mantenimiento Storybook\n• UI/UX implementation" as Frontend #LightYellow
+  }
+
+  TechLead -down-> DevOps
+  TechLead -down-> Backend
+  TechLead -down-> QA
+  TechLead -down-> Frontend
+
+}
+
+note right of TechLead
+  **Liderazgo técnico:**
+  • Guía arquitectónica
+  • Mentoría diaria
+  • Revisión de código
+  • Gestión técnica del proyecto
+end note
+
+note bottom of "Backend Team"
+  **Responsabilidades compartidas:**
+  • Desarrollo de microservicios
+  • Implementación de CI/CD
+  • Testing automatizado
+  • Monitoreo y observabilidad
+end note
+
+note bottom of "Frontend Team"
+  **Colaboración cross-funcional:**
+  • Trabajo conjunto con Backend
+  • Participación en diseño de APIs
+  • Testing end-to-end integrado
+end note
+
+legend bottom
+  **Presupuesto Anual:** 256.000€
+  **Salarios estimados (España):**
+  • SR: 63-75K€ (costo empresa)
+  • MID: 44-53K€ (costo empresa)
+  • JR: 30-38K€ (costo empresa)
+endlegend
+
+@enduml

@@ -1,0 +1,177 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert' version '4.0.2'
+    id 'org.asciidoctor.jvm.pdf' version '4.0.2'
+}
+
+group = 'com.mscope'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+// Configuración de Asciidoctor
+asciidoctor {
+    sourceDir = file('src/docs/asciidoc')
+    outputDir = file('build/docs/html')
+
+    attributes = [
+        'source-highlighter': 'coderay',
+        'toc': 'left',
+        'toclevels': 3,
+        'sectnums': '',
+        'sectnumlevels': 3,
+        'icons': 'font',
+        'imagesdir': 'images',
+        'docinfo': 'shared',
+        'experimental': '',
+        'chapter-label': '',
+        'version-label': 'Versión',
+        'revnumber': project.version,
+        'revdate': new Date().format('yyyy-MM-dd')
+    ]
+}
+
+// Configuración de Asciidoctor PDF
+asciidoctorPdf {
+    sourceDir = file('src/docs/asciidoc')
+    outputDir = file('build/docs/pdf')
+
+    baseDirFollowsSourceDir()
+
+    attributes = [
+        'source-highlighter': 'rouge',
+        'rouge-style': 'github',
+        'toc': '',
+        'toclevels': 3,
+        'sectnums': '',
+        'sectnumlevels': 3,
+        'icons': 'font',
+        'imagesdir': 'images',
+        'pdf-theme': 'mscope',
+        'pdf-themesdir': 'themes',
+        'allow-uri-read': '',
+        'chapter-label': '',
+        'figure-caption': 'Figura',
+        'table-caption': 'Tabla',
+        'listing-caption': 'Listado',
+        'experimental': '',
+        'revnumber': project.version,
+        'revdate': new Date().format('yyyy-MM-dd')
+    ]
+}
+
+// Task para generar diagramas PlantUML
+task generateDiagrams {
+    group = 'documentation'
+    description = 'Genera diagramas UML con PlantUML'
+
+    doLast {
+        def diagramsDir = file('src/docs/diagrams')
+        def outputDir = file('src/docs/asciidoc/images')
+        def plantumlJar = file('lib/plantuml.jar')
+
+        outputDir.mkdirs()
+
+        // Descargar PlantUML si no existe
+        if (!plantumlJar.exists()) {
+            println "Descargando PlantUML..."
+            plantumlJar.parentFile.mkdirs()
+
+            new URL('https://github.com/plantuml/plantuml/releases/download/v1.2023.13/plantuml-1.2023.13.jar')
+                .withInputStream { i ->
+                    plantumlJar.withOutputStream { it << i }
+                }
+            println "PlantUML descargado: ${plantumlJar.absolutePath}"
+        }
+
+        // Generar diagramas
+        fileTree(diagramsDir).matching {
+            include '**/*.puml'
+        }.each { pumlFile ->
+            println "Generando diagrama: ${pumlFile.name}"
+
+            def outputFile = new File(outputDir, pumlFile.name.replace('.puml', '.png'))
+
+            exec {
+                commandLine 'java', '-jar',
+                    plantumlJar.absolutePath,
+                    '-o', outputDir.absolutePath,
+                    pumlFile.absolutePath
+                ignoreExitValue = true
+            }
+
+            if (!outputFile.exists()) {
+                println "  ⚠ No se pudo generar ${outputFile.name} - continuando..."
+            } else {
+                println "  ✓ Generado: ${outputFile.name}"
+            }
+        }
+    }
+}
+
+// Task personalizada para generar todo
+task generatePdf {
+    group = 'documentation'
+    description = 'Genera PDF completo con diagramas'
+
+    dependsOn generateDiagrams
+    dependsOn asciidoctorPdf
+
+    doLast {
+        def pdfFile = file('build/docs/pdf/plan-tech-lead.pdf')
+        def finalPdf = file('build/Plan_Tech_Lead_mscope.pdf')
+
+        if (pdfFile.exists()) {
+            ant.copy(file: pdfFile, tofile: finalPdf)
+            println "\n" + "=" * 60
+            println "✓ PDF generado exitosamente!"
+            println "  Ubicación: ${finalPdf.absolutePath}"
+            println "  Tamaño: ${String.format('%.2f', finalPdf.size() / 1024 / 1024)} MB"
+            println "=" * 60
+        }
+    }
+}
+
+// Task para abrir el PDF
+task openPdf {
+    group = 'documentation'
+    description = 'Abre el PDF generado'
+
+    dependsOn generatePdf
+
+    doLast {
+        def pdfFile = file('build/Plan_Tech_Lead_mscope.pdf')
+
+        if (pdfFile.exists()) {
+            def os = System.getProperty('os.name').toLowerCase()
+
+            if (os.contains('windows')) {
+                exec {
+                    commandLine 'cmd', '/c', 'start', pdfFile.absolutePath
+                }
+            } else if (os.contains('mac')) {
+                exec {
+                    commandLine 'open', pdfFile.absolutePath
+                }
+            } else {
+                exec {
+                    commandLine 'xdg-open', pdfFile.absolutePath
+                }
+            }
+        }
+    }
+}
+
+// Task para limpiar builds anteriores
+task cleanDocs(type: Delete) {
+    group = 'documentation'
+    description = 'Limpia documentación generada'
+    delete 'build/docs'
+    delete 'build/*.pdf'
+}
+
+clean.dependsOn cleanDocs
+
+// Task por defecto
+defaultTasks 'generatePdf'

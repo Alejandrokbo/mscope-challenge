@@ -1,0 +1,9 @@
+// Configuración de repositorios para plugins
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'tech-lead-plan-mscope'

@@ -1,0 +1,59 @@
+@startuml data-lake-analytics
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+
+title Data Lake para Analytics (S3 + Athena)
+
+cloud "Eventos de\nAplicación" as EVENTS #2C5AA0
+
+package "Ingesta Streaming" {
+    [Kinesis Data Firehose] as FIREHOSE #5D8BC7
+    note right of FIREHOSE
+      - Transformación en tiempo real
+      - Buffer y batching
+      - Compresión automática
+    end note
+}
+
+package "S3 Data Lake" {
+    folder "raw/" as RAW #F39C12 {
+        [year=2025/\nmonth=01/\nday=22/] as RAW_PARTITION
+    }
+
+    folder "processed/" as PROCESSED #27AE60 {
+        [tenant_id=xxx/\ndate=2025-01-22/] as PROC_PARTITION
+    }
+
+    folder "curated/" as CURATED #2C5AA0 {
+        [analytics_ready/] as CURATED_DATA
+    }
+}
+
+package "Procesamiento y Analytics" {
+    [Glue ETL] as GLUE #5D8BC7
+    [Athena Queries] as ATHENA #2C5AA0
+    database "Glue Data\nCatalog" as CATALOG #95A5A6
+}
+
+' Flujo de datos
+EVENTS --> FIREHOSE
+FIREHOSE --> RAW : "Datos crudos\n(Parquet/JSON)"
+
+RAW --> GLUE : "Extracción"
+GLUE --> PROCESSED : "Limpieza y\nenriquecimiento"
+
+PROCESSED --> GLUE : "Transformación"
+GLUE --> CURATED : "Datos listos\npara analytics"
+
+CURATED --> ATHENA : "Consultas SQL"
+GLUE ..> CATALOG : "Registra\nmetadata"
+ATHENA ..> CATALOG : "Lee\nschema"
+
+note bottom of ATHENA
+  - Queries serverless
+  - Pay per query
+  - Integración con QuickSight
+end note
+
+@enduml

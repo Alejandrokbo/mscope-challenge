@@ -1,0 +1,137 @@
+@startuml tenant-isolation-flow
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+title Flujo de Aislamiento Automático de Tenant (Row Level Security)
+
+skinparam participant {
+    BackgroundColor #E8F4F8
+    BorderColor #2C5AA0
+}
+
+skinparam database {
+    BackgroundColor #F0F8FF
+    BorderColor #5D8BC7
+}
+
+actor "Cliente\n(Tenant ES)" as User
+participant "API Gateway" as API
+participant "Auth Service" as Auth
+participant "Tenant\nInterceptor" as Interceptor
+participant "Business\nService" as Service
+database "Aurora MySQL\n(RLS Enabled)" as DB
+
+== Autenticación ==
+
+User -> API: **POST /api/auth/login**\nemail: user@empresa.es
+activate API
+
+API -> Auth: Validate credentials
+activate Auth
+
+Auth -> DB: SELECT * FROM users\nWHERE email = 'user@empresa.es'
+DB --> Auth: user_id, tenant_id, password_hash
+
+Auth -> Auth: Verify password
+Auth --> API: **JWT Token**\n{user_id, tenant_id: "ES-UUID-123"}
+deactivate Auth
+
+API --> User: 200 OK + JWT
+deactivate API
+
+== Request con Aislamiento Automático ==
+
+User -> API: **GET /api/transactions?status=completed**\nAuthorization: Bearer <JWT>
+activate API
+
+API -> Auth: Validate JWT Token
+activate Auth
+Auth --> API: Token válido\n**tenant_id: "ES-UUID-123"**
+deactivate Auth
+
+API -> Interceptor: Extract tenant_id from JWT
+activate Interceptor
+
+Interceptor -> Interceptor: Set session variable
+note right
+  **Database Session Variable:**
+  SET @current_tenant_id = 'ES-UUID-123'
+
+  O en PostgreSQL/Aurora:
+  SET app.current_tenant = 'ES-UUID-123'
+end note
+
+Interceptor --> API: Context set
+deactivate Interceptor
+
+API -> Service: Get transactions(status='completed')
+activate Service
+
+Service -> DB: **SELECT * FROM transactions**\n**WHERE status = 'completed'**
+activate DB
+
+note over DB
+  **Row Level Security Policy activa:**
+
+  CREATE POLICY tenant_isolation_policy
+  ON transactions
+  FOR ALL
+  USING (tenant_id = @current_tenant_id);
+
+  **Query real ejecutada:**
+  SELECT * FROM transactions
+  WHERE status = 'completed'
+  **AND tenant_id = 'ES-UUID-123'**  ← Añadido automáticamente
+end note
+
+DB --> Service: [Transaction 1, Transaction 2, ...]\n(solo del tenant ES-UUID-123)
+deactivate DB
+
+Service --> API: JSON Response
+deactivate Service
+
+API --> User: 200 OK + Transactions
+deactivate API
+
+== Intento de Acceso No Autorizado (Bloqueado) ==
+
+User -> API: **GET /api/transactions/mx-transaction-456**\n(Transaction de otro tenant)
+activate API
+
+API -> Interceptor: tenant_id = "ES-UUID-123"
+activate Interceptor
+Interceptor --> API: Context set
+deactivate Interceptor
+
+API -> Service: Get transaction('mx-transaction-456')
+activate Service
+
+Service -> DB: SELECT * FROM transactions\nWHERE transaction_id = 'mx-transaction-456'
+activate DB
+
+note over DB
+  **RLS Policy filtra:**
+  WHERE transaction_id = 'mx-transaction-456'
+  **AND tenant_id = 'ES-UUID-123'**
+
+  **Resultado:** 0 filas
+  (la transacción existe pero es del tenant MX)
+end note
+
+DB --> Service: **Empty result set**
+deactivate DB
+
+Service --> API: **404 Not Found**
+deactivate Service
+
+API --> User: **404 Not Found**
+deactivate API
+
+note right of User
+  **Seguridad garantizada:**
+  El tenant ES no puede acceder
+  a datos del tenant MX, incluso
+  si conoce el ID de la transacción
+end note
+
+@enduml
