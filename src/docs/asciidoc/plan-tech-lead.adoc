@@ -477,7 +477,7 @@ image::pipeline-cicd.png[Pipeline CI/CD Completo,align="center"]
 
 [TIP]
 ====
-Ver configuración completa en Anexo D: Ejemplo de `.github/workflows/main.yml` o GitLab CI.
+Ver configuración completa en Anexo C (disponible bajo demanda): Ejemplo de `.github/workflows/main.yml` o GitLab CI.
 ====
 
 ==== Herramientas CI/CD
